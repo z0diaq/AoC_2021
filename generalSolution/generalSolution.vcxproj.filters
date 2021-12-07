@@ -15,17 +15,14 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="d02ep01.cpp">
+    <ClCompile Include="data.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="data.ixx">
+    <ClCompile Include="input.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="result.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="input.txt" />
   </ItemGroup>
 </Project>

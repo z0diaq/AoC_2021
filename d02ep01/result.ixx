@@ -2,42 +2,64 @@ module;
 
 #include <iostream>
 
-export module result;
+export module dive;
 
-import data;
+export import :data;
 
-struct Position
+namespace
 {
-	int m_x = 0;
-	int m_y = 0;
-};
+	struct Position
+	{
+		int m_x = 0;
+		int m_y = 0;
+	};
+}
 
-export class Result
+export namespace dive
 {
+	class Result : public AoC::Result
+	{
 
-public:
-	Result( );
+	public:
+		Result( );
 
-	void Process( const Data& data );
-	void Finish( ) const;
+		virtual void Init( ) override;
+		virtual void Process( const AoC::Data* data ) override;
+		void Finish( ) const;
+		virtual void Teardown( ) override;
 
-private:
-	Position m_position;
-};
+	private:
+		Position m_position;
+	};
+}
 
-Result::Result( )
+dive::Result::Result( )
 {
 }
 
 void
-Result::Process( const Data& data )
+dive::Result::Init( )
 {
-	m_position.m_x += data.m_x;
-	m_position.m_y += data.m_y;
+	m_data = new dive::Data( );
 }
 
 void
-Result::Finish( ) const
+dive::Result::Teardown( )
+{
+	delete m_data;
+	m_data = nullptr;
+}
+
+void
+dive::Result::Process( const AoC::Data* data )
+{
+	const dive::Data* ourData = static_cast< const dive::Data* >( data );
+	m_position.m_x += ourData->m_x;
+	m_position.m_y += ourData->m_y;
+}
+
+void
+dive::Result::Finish( ) const
 {
 	std::cout
 		<< "final position - "

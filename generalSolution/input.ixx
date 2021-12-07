@@ -6,28 +6,31 @@ module;
 
 #include <string.h> //strerror_s
 
-export module input;
+export module AoC:input;
 
-export import data;
+import :data;
 
 static const std::string FILENAME( "input.txt" );
 //see: https://docs.microsoft.com/en-us/cpp/c-runtime-library/reference/strerror-s-strerror-s-wcserror-s-wcserror-s
 constexpr size_t BUFF_SIZE = 94;
 
-export class Input
+export namespace AoC
 {
-public:
-    Input( );
+    class Input
+    {
+    public:
+        Input( );
 
-    bool Next( Data& data );
-    operator bool( );
+        bool Next( Data* data );
+        operator bool( );
 
-private:
-    std::ifstream m_file;
+    private:
+        std::ifstream m_file;
 
-};
+    };
+}
 
-Input::Input( )
+AoC::Input::Input( )
 {
     m_file.open( FILENAME );
     if( false == m_file.is_open( ) )
@@ -41,32 +44,21 @@ Input::Input( )
 }
 
 bool
-Input::Next( Data& data )
+AoC::Input::Next( Data* data )
 {
-    data.m_x = data.m_y = 0;
+    if( m_file.fail( ) )
+        return false;
 
-    std::string direction;
-    int value{ 0 };
+    static std::string line;
 
-    m_file >> direction >> value;
+    std::getline( m_file, line );
 
-    if( "forward" == direction )
-    {
-        data.m_x = value;
-    }
-    else if( "up" == direction )
-    {
-        data.m_y = -value;
-    }
-    else
-    {
-        data.m_y = value;
-    }
+    data->Process( line );
 
     return ( false == m_file.fail( ) );
 }
 
-Input::operator bool( )
+AoC::Input::operator bool( )
 {
     return m_file.is_open( );
 };
