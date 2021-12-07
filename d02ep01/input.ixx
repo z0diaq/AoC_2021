@@ -1,14 +1,18 @@
 module;
 
-#include <cstdio>
-#include <cstring>
-#include <cstdlib>
+#include <iostream>
+#include <fstream>
+#include <string>
+
+#include <string.h> //strerror_s
 
 export module input;
 
 export import data;
 
-static const errno_t c_noError{0};
+static const std::string FILENAME( "input.txt" );
+//see: https://docs.microsoft.com/en-us/cpp/c-runtime-library/reference/strerror-s-strerror-s-wcserror-s-wcserror-s
+constexpr size_t BUFF_SIZE = 94;
 
 export class Input
 {
@@ -19,21 +23,20 @@ public:
     operator bool( );
 
 private:
-    FILE* m_fp;
+    std::ifstream m_file;
 
 };
 
 Input::Input( )
 {
-    //expecting to have input data in current working directory
-    //which might be different that where binary is built
-    auto result = fopen_s( &m_fp, "input.txt", "r" );
-    if( c_noError != result )
+    m_file.open( FILENAME );
+    if( false == m_file.is_open( ) )
     {
-        fprintf(
-            stderr,
-            "Could not open input file! Errno = %u\n",
-            result );
+        char errmsg[ BUFF_SIZE ];
+        strerror_s( errmsg, BUFF_SIZE, errno );
+        std::cerr
+            << "Could not open " << FILENAME
+            << ", error: " << errmsg << std::endl;
     }
 }
 
@@ -42,22 +45,16 @@ Input::Next( Data& data )
 {
     data.m_x = data.m_y = 0;
 
-    static char direction[ 8 ];
-    int value{0};
-    if( EOF == fscanf_s(
-        m_fp,
-        "%s %d",
-        direction, static_cast< unsigned int >( _countof( direction ) ),
-        &value ) )
-    {
-        return false;
-    }
+    std::string direction;
+    int value{ 0 };
 
-    if( 0 == strcmp( direction, "forward" ) )
+    m_file >> direction >> value;
+
+    if( "forward" == direction )
     {
         data.m_x = value;
     }
-    else if( 0 == strcmp( direction, "up" ) )
+    else if( "up" == direction )
     {
         data.m_y = -value;
     }
@@ -66,10 +63,10 @@ Input::Next( Data& data )
         data.m_y = value;
     }
 
-    return true;
+    return ( false == m_file.fail( ) );
 }
 
 Input::operator bool( )
 {
-    return m_fp != nullptr;
+    return m_file.is_open( );
 };

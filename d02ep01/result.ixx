@@ -1,6 +1,6 @@
 module;
 
-#include <cstdio>
+#include <iostream>
 
 export module result;
 
@@ -14,15 +14,14 @@ struct Position
 
 export class Result
 {
+
 public:
 	Result( );
 
 	void Process( const Data& data );
-
 	void Finish( ) const;
 
 private:
-
 	Position m_position;
 };
 
@@ -40,13 +39,14 @@ Result::Process( const Data& data )
 void
 Result::Finish( ) const
 {
-	printf(
-		"final position - x:[ %d ], y:[ %d ]\n",
-		m_position.m_x,
-		m_position.m_y );
+	std::cout
+		<< "final position - "
+		"x:[ " << m_position.m_x << " ], "
+		"y: [ " << m_position.m_y << " ]"
+		<< std::endl;
 
-	fprintf(
-		stdout,
-		"result = %d\n",
-		m_position.m_x * m_position.m_y );
+	std::cout
+		<< "result = "
+		<< ( m_position.m_x * m_position.m_y )
+		<< std::endl;
 }

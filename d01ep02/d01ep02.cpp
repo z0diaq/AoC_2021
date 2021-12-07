@@ -5,18 +5,21 @@ import data;
 
 int main( )
 {
+    std::ios::sync_with_stdio( false );
+
     int sums[ 4 ] = { 0 },
         count[ 4 ] = { 0 };
-    int current{ 0 }, increases{ 0 };
+    int current{ 0 },
+        increases{ 0 };
 
-    Data d;
+    Data data;
 
-    if( !d )
+    if( !data )
     {
         return 0;
     }
 
-    while( d.Next( current ) )
+    while( data.Next( current ) )
     {
         int fills = count[ 0 ] + 1;
         for( int pos = 0; pos < 4 && fills; ++pos, --fills )
@@ -42,7 +45,7 @@ int main( )
         }
     }
 
-    fprintf( stdout, "result = %d\n", increases );
+    std::cout << "result = " << increases << std::endl;
 
     return 0;
 }

@@ -1,13 +1,33 @@
-#include <cstdio>
+//doesn't work as of 07.12.2021
+//import std.core;
+
+#include <iostream>
+#include <fstream>
+#include <string>
+
+#include <string.h> //strerror
+
+static const std::string FILENAME( "input.txt" );
 
 int main( )
 {
+    std::ios::sync_with_stdio( false );
+
     int previous{ 0 },
         current{ 0 },
         increases{ 0 };
     bool isFirst{ true };
 
-    while( EOF != fscanf_s( stdin, "%d", &current ) )
+    std::ifstream file( FILENAME );
+
+    if( false == file.is_open( ) )
+    {
+        perror( "Could not open input file" );
+        
+        return 1;
+    }
+
+    while( file >> current )
     {
         if( isFirst )
         {
@@ -18,7 +38,7 @@ int main( )
         previous = current;
     }
 
-    printf( "result: %d\n", increases );
+    std::cout << "result: " << increases << std::endl;
 
     return 0;
 }
