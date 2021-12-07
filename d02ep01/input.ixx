@@ -1,7 +1,8 @@
 module;
 
 #include <cstdio>
-#include <string>
+#include <cstring>
+#include <cstdlib>
 
 export module input;
 

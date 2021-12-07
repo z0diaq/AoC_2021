@@ -1,5 +1,4 @@
 #include <cstdio>
-#include <algorithm>//std::swap
 
 import input;
 import result;
