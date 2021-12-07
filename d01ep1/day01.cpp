@@ -2,13 +2,13 @@
 
 int main( )
 {
-    int previous{ 0 }, current{ 0 };
+    int previous{ 0 },
+        current{ 0 },
+        increases{ 0 };
     bool isFirst{ true };
-    int increases{ 0 };
 
-    while( false == feof( stdin ) )
+    while( EOF != fscanf_s( stdin, "%d", &current ) )
     {
-        fscanf_s( stdin, "%d", &current );
         if( isFirst )
         {
             isFirst = false;//ignore first element
@@ -18,5 +18,7 @@ int main( )
         previous = current;
     }
 
-    return increases;
+    printf( "result: %d\n", increases );
+
+    return 0;
 }
