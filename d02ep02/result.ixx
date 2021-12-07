@@ -6,12 +6,6 @@ export module dive;
 
 export import :data;
 
-struct Position
-{
-	int m_x = 0;
-	int m_y = 0;
-};
-
 export namespace dive
 {
 	class Result : public AoC::Result
@@ -26,7 +20,9 @@ export namespace dive
 		virtual void Teardown( ) override;
 
 	private:
-		Position m_position;
+		int m_aim = 0;
+		int m_position = 0;
+		int m_depth = 0;
 	};
 }
 
@@ -38,7 +34,7 @@ void
 dive::Result::Init( )
 {
 	m_data = new dive::Data( );
-	m_position = Position( );
+	m_aim = m_position = m_depth = 0;
 }
 
 void
@@ -52,24 +48,31 @@ void
 dive::Result::Process( const AoC::Data* data )
 {
 	const dive::Data* ourData = static_cast< const dive::Data* >( data );
-	m_position.m_x += ourData->m_x;
-	m_position.m_y += ourData->m_y;
+	if( ourData->m_y )
+	{
+		m_aim += ourData->m_y;
+	}
+	else
+	{
+		m_position += ourData->m_x;
+		m_depth += m_aim * ourData->m_x;
+	}
 }
 
 int
 dive::Result::Finish( ) const
 {
 	std::cout
-		<< "final position - "
-		"x:[ " << m_position.m_x << " ], "
-		"y: [ " << m_position.m_y << " ]"
+		<< "final values - "
+		"position:[ " << m_position << " ], "
+		"depth: [ " << m_depth << " ]"
 		<< std::endl;
 
-	int accumulated = m_position.m_x * m_position.m_y;
+	int accumulated = m_position * m_depth;
 
 	std::cout
 		<< "result = "
-		<< accumulated
+		<< ( m_position * m_depth )
 		<< std::endl;
 
 	return accumulated;

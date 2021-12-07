@@ -10,7 +10,6 @@ export module AoC:input;
 
 import :data;
 
-static const std::string FILENAME( "input.txt" );
 //see: https://docs.microsoft.com/en-us/cpp/c-runtime-library/reference/strerror-s-strerror-s-wcserror-s-wcserror-s
 constexpr size_t BUFF_SIZE = 94;
 
@@ -19,7 +18,7 @@ export namespace AoC
     class Input
     {
     public:
-        Input( );
+        Input( const std::string& filename );
 
         bool Next( Data* data );
         operator bool( );
@@ -30,15 +29,15 @@ export namespace AoC
     };
 }
 
-AoC::Input::Input( )
+AoC::Input::Input( const std::string& filename )
 {
-    m_file.open( FILENAME );
+    m_file.open( filename );
     if( false == m_file.is_open( ) )
     {
         char errmsg[ BUFF_SIZE ];
         strerror_s( errmsg, BUFF_SIZE, errno );
         std::cerr
-            << "Could not open " << FILENAME
+            << "Could not open " << filename
             << ", error: " << errmsg << std::endl;
     }
 }
