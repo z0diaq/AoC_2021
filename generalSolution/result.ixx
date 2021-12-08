@@ -99,13 +99,25 @@ AoC::Result::InternalExecute( const std::string& filename )
     std::cout << "INFO: analyzing data from " << filename << " ..." << std::endl;
 
     this->Init( );
+    int accumulated{-1};
 
-    while( input.Next( m_data ) )
+    try
     {
-        this->Process( m_data );
-    }
+        while( input.Next( m_data ) )
+        {
+            this->Process( m_data );
+        }
 
-    int accumulated = this->Finish( );
+        accumulated = this->Finish( );
+    }
+    catch( const std::exception& e )
+    {
+        std::cerr << "FATAL: exception [" << e.what( ) << "] caught while processing data!" << std::endl;
+    }
+    catch( ... )
+    {
+        std::cerr << "FATAL: unknown exception caught while processing data!" << std::endl;
+    }
 
     this->Teardown( );
 
