@@ -24,7 +24,7 @@ export namespace binary_diagnostic
 		Result( );
 
 		virtual void Init( ) override;
-		virtual void Process( const AoC::Data* data ) override;
+		virtual bool Process( const AoC::DataPtr& data ) override;
 		virtual int Finish( ) const override;
 		virtual void Teardown( ) override;
 
@@ -45,21 +45,20 @@ binary_diagnostic::Result::Result( )
 void
 binary_diagnostic::Result::Init( )
 {
-	m_data = new binary_diagnostic::Data( );
+	m_data.reset( new binary_diagnostic::Data( ) );
 	m_processedLines = 0;
 }
 
 void
 binary_diagnostic::Result::Teardown( )
 {
-	delete m_data;
-	m_data = nullptr;
+	m_data.reset( );
 }
 
-void
-binary_diagnostic::Result::Process( const AoC::Data* data )
+bool
+binary_diagnostic::Result::Process( const AoC::DataPtr& data )
 {
-	const binary_diagnostic::Data* ourData = static_cast< const binary_diagnostic::Data* >( data );
+	const binary_diagnostic::Data* ourData = static_cast< const binary_diagnostic::Data* >( data.get( ) );
 	//one time init
 	if( 0 == m_processedLines )
 		m_ones = ourData->m_bits;
@@ -72,6 +71,8 @@ binary_diagnostic::Result::Process( const AoC::Data* data )
 	}
 
 	++m_processedLines;
+
+	return true;
 }
 
 std::string

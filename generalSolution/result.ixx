@@ -22,11 +22,13 @@ export namespace AoC
     {
 
     public:
-        Result( );
-        virtual ~Result( );
+        Result( ) = default;
+        virtual ~Result( ) = default;
 
         virtual void Init( ) = 0;
-        virtual void Process( const Data* data ) = 0;
+        //result eq true means source data was fully consumed and can be reset now
+        //          false means it can't be cleared yet
+        virtual bool Process( const DataPtr& data ) = 0;
         virtual int Finish( ) const = 0;
         virtual void Teardown( ) = 0;
 
@@ -35,7 +37,8 @@ export namespace AoC
             int expectedDataResult = -1 );   // known only after completing second half of puzzle
 
     protected:
-        Data* m_data;
+        AoC::Input m_input;
+        DataPtr m_data;
 
         int InternalExecute( const std::string& filename );
         ResultType CheckResult(
@@ -43,16 +46,6 @@ export namespace AoC
             const int expected,
             const std::string& filename ) const;
     };
-}
-
-AoC::Result::Result( ) :
-    m_data( nullptr )
-{
-}
-
-AoC::Result::~Result( )
-{
-    delete m_data;
 }
 
 AoC::ResultType
@@ -89,23 +82,23 @@ AoC::Result::Execute(
 int
 AoC::Result::InternalExecute( const std::string& filename )
 {
-    AoC::Input input( filename );
-
-    if( !input )
+    if( false == m_input.Init( filename ) )
     {
         return -1;
     }
 
     std::cout << "INFO: analyzing data from " << filename << " ..." << std::endl;
 
-    this->Init( );
     int accumulated{-1};
 
     try
     {
-        while( input.Next( m_data ) )
+        this->Init( );
+
+        while( m_input.Next( m_data ) )
         {
-            this->Process( m_data );
+            if( this->Process( m_data ) )
+                m_data->Reset( );
         }
 
         accumulated = this->Finish( );

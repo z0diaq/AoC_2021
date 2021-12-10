@@ -17,10 +17,14 @@ export namespace AoC
 {
     class Input
     {
-    public:
-        Input( const std::string& filename );
 
-        bool Next( Data* data );
+    public:
+        Input( ) = default;
+        
+        bool Init( const std::string& filename );
+
+        bool Next( std::string& line );
+        bool Next( DataPtr& data );
         operator bool( );
 
     private:
@@ -29,8 +33,12 @@ export namespace AoC
     };
 }
 
-AoC::Input::Input( const std::string& filename )
+bool
+AoC::Input::Init( const std::string& filename )
 {
+    if( m_file.is_open( ) )
+        m_file.close( );
+    m_file.clear( );
     m_file.open( filename );
     if( false == m_file.is_open( ) )
     {
@@ -39,22 +47,33 @@ AoC::Input::Input( const std::string& filename )
         std::cerr
             << "Could not open " << filename
             << ", error: " << errmsg << std::endl;
+        return false;
     }
+
+    return true;
 }
 
 bool
-AoC::Input::Next( Data* data )
+AoC::Input::Next( std::string& line )
 {
     if( m_file.fail( ) )
         return false;
 
-    static std::string line;
-
     std::getline( m_file, line );
 
-    data->Process( line );
-
     return ( false == m_file.fail( ) );
+}
+
+bool
+AoC::Input::Next( DataPtr& data )
+{
+    static std::string line;
+    const bool readResult = this->Next( line );
+
+    if( readResult )
+        data->Process( line );
+
+    return readResult;
 }
 
 AoC::Input::operator bool( )

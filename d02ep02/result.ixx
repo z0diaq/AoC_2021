@@ -15,7 +15,7 @@ export namespace dive
 		Result( );
 
 		virtual void Init( ) override;
-		virtual void Process( const AoC::Data* data ) override;
+		virtual bool Process( const AoC::DataPtr& data ) override;
 		virtual int Finish( ) const override;
 		virtual void Teardown( ) override;
 
@@ -33,21 +33,20 @@ dive::Result::Result( )
 void
 dive::Result::Init( )
 {
-	m_data = new dive::Data( );
+	m_data.reset( new dive::Data( ) );
 	m_aim = m_position = m_depth = 0;
 }
 
 void
 dive::Result::Teardown( )
 {
-	delete m_data;
-	m_data = nullptr;
+	m_data.reset( );
 }
 
-void
-dive::Result::Process( const AoC::Data* data )
+bool
+dive::Result::Process( const AoC::DataPtr& data )
 {
-	const dive::Data* ourData = static_cast< const dive::Data* >( data );
+	const dive::Data* ourData = static_cast< const dive::Data* >( data.get( ) );
 	if( ourData->m_y )
 	{
 		m_aim += ourData->m_y;
@@ -57,6 +56,8 @@ dive::Result::Process( const AoC::Data* data )
 		m_position += ourData->m_x;
 		m_depth += m_aim * ourData->m_x;
 	}
+
+	return true;
 }
 
 int

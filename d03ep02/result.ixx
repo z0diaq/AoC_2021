@@ -32,7 +32,7 @@ export namespace life_support_data
 		Result( );
 
 		virtual void Init( ) override;
-		virtual void Process( const AoC::Data* data ) override;
+		virtual bool Process( const AoC::DataPtr& data ) override;
 		virtual int Finish( ) const override;
 		virtual void Teardown( ) override;
 
@@ -57,7 +57,7 @@ life_support_data::Result::Result( )
 void
 life_support_data::Result::Init( )
 {
-	m_data = new life_support_data::Data( );
+	m_data.reset( new life_support_data::Data( ) );
 	m_testData.clear( );
 	m_usedBits = 0;
 }
@@ -65,16 +65,17 @@ life_support_data::Result::Init( )
 void
 life_support_data::Result::Teardown( )
 {
-	delete m_data;
-	m_data = nullptr;
+	m_data.reset( );
 }
 
-void
-life_support_data::Result::Process( const AoC::Data* data )
+bool
+life_support_data::Result::Process( const AoC::DataPtr& data )
 {
-	const life_support_data::Data* ourData = static_cast< const life_support_data::Data* >( data );
+	const life_support_data::Data* ourData = static_cast< const life_support_data::Data* >( data.get( ) );
 	m_usedBits = ourData->m_usedBits;
 	m_testData.push_back( ourData->m_bits );
+
+	return true;
 }
 
 life_support_data::Item
