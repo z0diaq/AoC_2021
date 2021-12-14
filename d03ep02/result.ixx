@@ -33,7 +33,7 @@ export namespace life_support_data
 
 		virtual void Init( ) override;
 		virtual bool Process( const AoC::DataPtr& data ) override;
-		virtual int Finish( ) const override;
+		virtual uint64_t Finish( ) const override;
 		virtual void Teardown( ) override;
 
 	private:
@@ -155,7 +155,7 @@ life_support_data::Result::ToNumber( const Item& bits ) const
 	return result;
 }
 
-int
+uint64_t
 life_support_data::Result::Finish( ) const
 {
 	Item
@@ -168,7 +168,7 @@ life_support_data::Result::Finish( ) const
 		"co2ScrubberRating: [ " << co2ScrubberRating.to_string( ).substr( co2ScrubberRating.size( ) - m_usedBits ) << " ]"
 		<< std::endl;
 
-	const unsigned int computedValue = ToNumber( oxygenGeneratorRating ) * ToNumber( co2ScrubberRating );
+	const uint64_t computedValue = ToNumber( oxygenGeneratorRating ) * ToNumber( co2ScrubberRating );
 
 	std::cout
 		<< "result = "

@@ -6,5 +6,5 @@ int main( )
 {
     giant_squid::Result result;
 
-    return result.Execute( 1924, 3178 ) == AoC::ResultType::FAILED;
+    return result.Execute( 1924u, 3178u ) == AoC::ResultType::FAILED;
 }

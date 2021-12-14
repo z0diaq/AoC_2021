@@ -21,7 +21,7 @@ export namespace giant_squid
         void Push( unsigned int number );
         bool IsFilled( ) const;
         void MarkNumber( unsigned int number );
-        bool Bingo( unsigned int& result ) const;
+        bool Bingo( uint64_t& result ) const;
 
         void Reset( );
 
@@ -64,7 +64,7 @@ giant_squid::Board::MarkNumber( unsigned int number )
 }
 
 bool
-giant_squid::Board::Bingo( unsigned int& result ) const
+giant_squid::Board::Bingo( uint64_t& result ) const
 {
     result = 0;
     bool isBingo = false;

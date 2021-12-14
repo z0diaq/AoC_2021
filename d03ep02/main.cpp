@@ -6,5 +6,5 @@ int main( )
 {
     life_support_data::Result result;
 
-    return result.Execute( 230, 4'672'151 ) == AoC::ResultType::FAILED;
+    return result.Execute( 230u, 4'672'151u ) == AoC::ResultType::FAILED;
 }

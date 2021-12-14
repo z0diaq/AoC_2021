@@ -23,7 +23,7 @@ export namespace hydrothermal_venture
 
 		unsigned int& Ref( unsigned int col, unsigned int row );
 
-		unsigned int CountPointCoveredByTwoAndMore( ) const;
+		uint64_t CountPointCoveredByTwoAndMore( ) const;
 
 	private:
 		std::vector<unsigned int> m_map;
@@ -118,15 +118,14 @@ OceanFloorMap::Ref( unsigned int col, unsigned int row )
 	return m_map.at( row * m_width + col );
 }
 
-unsigned int
+uint64_t
 OceanFloorMap::CountPointCoveredByTwoAndMore( ) const
 {
-	return static_cast< unsigned int >( std::count_if(
+	return std::count_if(
 		m_map.begin( ),
 		m_map.end( ),
 		[ ]( const unsigned int& value ) -> bool
 		{
 			return value > 1;
-		}
-	) );
+		} );
 }

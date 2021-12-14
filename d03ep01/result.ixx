@@ -25,7 +25,7 @@ export namespace binary_diagnostic
 
 		virtual void Init( ) override;
 		virtual bool Process( const AoC::DataPtr& data ) override;
-		virtual int Finish( ) const override;
+		virtual uint64_t Finish( ) const override;
 		virtual void Teardown( ) override;
 
 	private:
@@ -104,7 +104,7 @@ binary_diagnostic::Result::ToNumber( const std::string& bits ) const
 	return result;
 }
 
-int
+uint64_t
 binary_diagnostic::Result::Finish( ) const
 {
 	std::string
@@ -117,7 +117,7 @@ binary_diagnostic::Result::Finish( ) const
 		"epsilon rate: [ " << epsilonRate << " ]"
 		<< std::endl;
 
-	const unsigned int computedValue = ToNumber( gammaRate ) * ToNumber( epsilonRate );
+	const uint64_t computedValue = ToNumber( gammaRate ) * ToNumber( epsilonRate );
 
 	std::cout
 		<< "result = "

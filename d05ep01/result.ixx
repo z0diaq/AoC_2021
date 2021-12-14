@@ -21,7 +21,7 @@ export namespace hydrothermal_venture
 
 		virtual void Init( ) override;
 		virtual bool Process( const AoC::DataPtr& data ) override;
-		virtual int Finish( ) const override;
+		virtual uint64_t Finish( ) const override;
 		virtual void Teardown( ) override;
 
 	private:
@@ -69,7 +69,7 @@ Result::Process( const AoC::DataPtr& data )
 	return true;
 }
 
-int
+uint64_t
 Result::Finish( ) const
 {
 	OceanFloorMap map;

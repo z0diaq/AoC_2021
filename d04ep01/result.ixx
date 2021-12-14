@@ -22,7 +22,7 @@ export namespace giant_squid
 
 		virtual void Init( ) override;
 		virtual bool Process( const AoC::DataPtr& data ) override;
-		virtual int Finish( ) const override;
+		virtual uint64_t Finish( ) const override;
 		virtual void Teardown( ) override;
 
 	private:
@@ -98,10 +98,10 @@ giant_squid::Result::Process( const AoC::DataPtr& data )
 	return true;
 }
 
-int
+uint64_t
 giant_squid::Result::Finish( ) const
 {
-	unsigned int computedValue = 0;
+	uint64_t computedValue = 0;
 
 	for( unsigned int number : m_drawnNumbers )
 	{

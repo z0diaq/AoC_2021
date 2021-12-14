@@ -16,7 +16,7 @@ export namespace dive
 
 		virtual void Init( ) override;
 		virtual bool Process( const AoC::DataPtr& data ) override;
-		virtual int Finish( ) const override;
+		virtual uint64_t Finish( ) const override;
 		virtual void Teardown( ) override;
 
 	private:
@@ -60,7 +60,7 @@ dive::Result::Process( const AoC::DataPtr& data )
 	return true;
 }
 
-int
+uint64_t
 dive::Result::Finish( ) const
 {
 	std::cout
@@ -69,7 +69,7 @@ dive::Result::Finish( ) const
 		"depth: [ " << m_depth << " ]"
 		<< std::endl;
 
-	int accumulated = m_position * m_depth;
+	uint64_t accumulated = static_cast< uint64_t >( m_position * m_depth );
 
 	std::cout
 		<< "result = "

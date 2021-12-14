@@ -18,6 +18,12 @@ export namespace AoC
         PASSED
     };
 
+    enum class Stage
+    {
+        PART_ONE,
+        PART_TWO
+    };
+
     class Result
     {
 
@@ -29,35 +35,39 @@ export namespace AoC
         //result eq true means source data was fully consumed and can be reset now
         //          false means it can't be cleared yet
         virtual bool Process( const DataPtr& data ) = 0;
-        virtual int Finish( ) const = 0;
+        virtual uint64_t Finish( ) const = 0;
         virtual void Teardown( ) = 0;
 
         virtual ResultType Execute(
-            int expectedTestDataResult = -1, // known up front
-            int expectedDataResult = -1 );   // known only after completing second half of puzzle
+            uint64_t expectedTestDataResult = 0, // known up front
+            uint64_t expectedDataResult = 0,     // known only after completing second half of puzzle
+            Stage stage = Stage::PART_ONE );
 
     protected:
         AoC::Input m_input;
-        DataPtr m_data;
+        DataPtr    m_data;
+        Stage      m_stage;
 
-        int InternalExecute( const std::string& filename );
+        unsigned long long InternalExecute( const std::string& filename );
         ResultType CheckResult(
-            const int computed,
-            const int expected,
+            const uint64_t computed,
+            const uint64_t expected,
             const std::string& filename ) const;
     };
 }
 
 AoC::ResultType
 AoC::Result::Execute(
-    int expectedTestDataResult /*= -1*/, // known up front
-    int expectedDataResult /*= -1*/ )    // known only after completing second half of puzzle
+    uint64_t expectedTestDataResult /*= 0*/, // known up front
+    uint64_t expectedDataResult /*= 0*/,     // known only after completing second half of puzzle
+    Stage stage /*= Part::One*/ )
 {
     std::ios::sync_with_stdio( false );
+    m_stage = stage;
 
     ResultType selfCheckResult = ResultType::PASSED;
 
-    if( expectedTestDataResult != -1 )
+    if( expectedTestDataResult )
     {
         selfCheckResult = this->CheckResult(
             this->InternalExecute( FILENAME_TEST ),
@@ -79,7 +89,7 @@ AoC::Result::Execute(
     }
 }
 
-int
+uint64_t
 AoC::Result::InternalExecute( const std::string& filename )
 {
     if( false == m_input.Init( filename ) )
@@ -89,7 +99,7 @@ AoC::Result::InternalExecute( const std::string& filename )
 
     std::cout << "INFO: analyzing data from " << filename << " ..." << std::endl;
 
-    int accumulated{-1};
+    uint64_t accumulated{0u};
 
     try
     {
@@ -118,7 +128,7 @@ AoC::Result::InternalExecute( const std::string& filename )
 }
 
 AoC::ResultType
-AoC::Result::CheckResult( const int computed, const int expected, const std::string& filename ) const
+AoC::Result::CheckResult( const uint64_t computed, const uint64_t expected, const std::string& filename ) const
 {
     if( computed == -1 )
         return ResultType::FAILED;
