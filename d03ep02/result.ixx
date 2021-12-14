@@ -71,7 +71,7 @@ life_support_data::Result::Teardown( )
 bool
 life_support_data::Result::Process( const AoC::DataPtr& data )
 {
-	const life_support_data::Data* ourData = static_cast< const life_support_data::Data* >( data.get( ) );
+	const Data* ourData = dynamic_cast< const Data* >( data.get( ) );
 	m_usedBits = ourData->m_usedBits;
 	m_testData.push_back( ourData->m_bits );
 

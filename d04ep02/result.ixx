@@ -105,11 +105,20 @@ giant_squid::Result::Finish( ) const
 
 	for( unsigned int number : m_drawnNumbers )
 	{
-		for( auto& board : m_boards )
+		for( auto it = m_boards.begin(); it != m_boards.end( ); )
 		{
-			board.MarkNumber( number );
-			if( board.Bingo( computedValue ) )
-				goto have_result;
+			it->MarkNumber( number );
+			if( it->Bingo( computedValue ) )
+			{
+				if( m_boards.size( ) == 1 )
+					goto have_result;
+				else
+					it = m_boards.erase( it );
+			}
+			else
+			{
+				++it;
+			}
 		}
 	}
 
