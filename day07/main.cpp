@@ -2,7 +2,7 @@ import whale;
 
 #include <iostream>
 
-//#define HAVE_PART2
+#define HAVE_PART2
 
 int main( )
 {
@@ -13,7 +13,7 @@ int main( )
 
 #ifdef HAVE_PART2
     std::cout << std::endl << "#### PART 2:" << std::endl;
-    auto resultPart2 = result.Execute( ??, ??, AoC::Stage::PART_TWO );
+    auto resultPart2 = result.Execute( 168, 99788435, AoC::Stage::PART_TWO );
 
     return
         resultPart1 == AoC::ResultType::FAILED ||

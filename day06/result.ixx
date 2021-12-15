@@ -61,7 +61,7 @@ Result::Process( const AoC::DataPtr& data )
 uint64_t
 Result::Finish( ) const
 {
-	uint64_t computedValue = IterateNTimes( m_stage == AoC::Stage::PART_ONE ? 80 : 256 );
+	uint64_t computedValue = IterateNTimes( IsPartTwo( ) ? 256 : 80 );
 
 	std::cout
 		<< "result = "

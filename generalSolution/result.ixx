@@ -46,7 +46,12 @@ export namespace AoC
     protected:
         AoC::Input m_input;
         DataPtr    m_data;
+
+        bool IsPartTwo( ) const;
+
+    private:
         Stage      m_stage;
+
 
         unsigned long long InternalExecute( const std::string& filename );
         ResultType CheckResult(
@@ -130,10 +135,10 @@ AoC::Result::InternalExecute( const std::string& filename )
 AoC::ResultType
 AoC::Result::CheckResult( const uint64_t computed, const uint64_t expected, const std::string& filename ) const
 {
-    if( computed == -1 )
+    if( computed == 0 )
         return ResultType::FAILED;
 
-    if( expected == -1 )
+    if( expected == 0 )
         return ResultType::PASSED;
 
     if( expected != computed )
@@ -155,3 +160,8 @@ AoC::Result::CheckResult( const uint64_t computed, const uint64_t expected, cons
     return ResultType::PASSED;
 }
 
+bool
+AoC::Result::IsPartTwo( ) const
+{
+    return m_stage == Stage::PART_TWO;
+}

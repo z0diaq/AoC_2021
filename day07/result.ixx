@@ -73,13 +73,13 @@ Result::Finish( ) const
 	{
 		if( distanceToMin < distanceToMax )
 		{
-			maxValue = ( ( minValue + maxValue ) / 2 );
+			maxValue = std::min( ( minValue + maxValue ) / 2, maxValue - 1 );
 			distanceToMax = Distance( maxValue );
 		}
 		else
 		{
 
-			minValue = ( ( minValue + maxValue ) / 2 );
+			minValue = std::max( ( minValue + maxValue ) / 2, minValue + 1 );
 			distanceToMin = Distance( minValue );
 		}
 	}
@@ -94,6 +94,10 @@ Result::Finish( ) const
 	return computedValue;
 }
 
+static unsigned long
+Lookup( unsigned long distance );
+
+
 unsigned long 
 Result::Distance( unsigned long position ) const
 {
@@ -101,8 +105,21 @@ Result::Distance( unsigned long position ) const
 
 	for( auto value : m_positions )
 	{
-		distance += std::max( value, position ) - std::min( value, position );
+		auto currentDistance = std::max( value, position ) - std::min( value, position );
+		distance += IsPartTwo( ) ? Lookup( currentDistance ) : currentDistance;
 	}
 
 	return distance;
+}
+
+unsigned long
+Lookup( unsigned long distance )
+{
+	static std::deque<unsigned long> lookup = { 0 };
+	while( lookup.size( ) <= distance )
+	{
+		lookup.push_back( lookup.back( ) + static_cast< unsigned long>( lookup.size( ) ) );
+	}
+
+	return lookup[ distance ];
 }
