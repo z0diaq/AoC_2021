@@ -6,22 +6,22 @@ module;
 
 #include <boost/algorithm/string.hpp>
 
-export module lanternfish:data;
+export module whale:data;
 
 export import AoC;
 
-export namespace lanternfish
+export namespace whale
 {
     struct Data : public AoC::Data
     {
         virtual void Process( const std::string& line ) override;
         virtual void Reset( ) override;
 
-        std::deque<signed char> m_population;
+        std::deque<unsigned long> m_positions;
     };
 }
 
-using namespace lanternfish;
+using namespace whale;
 
 void
 Data::Process( const std::string& line )
@@ -34,12 +34,12 @@ Data::Process( const std::string& line )
 		boost::is_any_of( ", " ),
 		boost::token_compress_on );
 
-	m_population.resize( tokens.size( ) );
+	m_positions.resize( tokens.size( ) );
 	std::transform(
 		tokens.begin( ),
 		tokens.end( ),
-		m_population.begin( ),
-		[ ]( const std::string& token ) -> unsigned int
+		m_positions.begin( ),
+		[ ]( const std::string& token ) -> unsigned long
 		{
 			return std::strtoul(
 				token.c_str( ),
@@ -51,5 +51,5 @@ Data::Process( const std::string& line )
 void
 Data::Reset( )
 {
-	m_population.clear( );
+	m_positions.clear( );
 }
