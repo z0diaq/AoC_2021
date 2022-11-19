@@ -6,5 +6,5 @@ int main( )
 {
     dive::Result result;
 
-    return result.Execute( 150u, 1727835u ) == AoC::ResultType::FAILED;
+    return result.Execute( 150u, 2215080u ) == AoC::ResultType::FAILED;
 }
