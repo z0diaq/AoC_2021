@@ -20,7 +20,7 @@ export namespace whale
 		Result( );
 
 		virtual void Init( ) override;
-		virtual bool Process( const AoC::DataPtr& data ) override;
+		virtual bool ProcessGeneral( const AoC::DataPtr& data ) override;
 		virtual uint64_t Finish( ) const override;
 		virtual void Teardown( ) override;
 
@@ -41,6 +41,7 @@ void
 Result::Init( )
 {
 	m_data.reset( new whale::Data( ) );
+	m_haveDedicatedProcessing = false;
 }
 
 void
@@ -50,7 +51,7 @@ Result::Teardown( )
 }
 
 bool
-Result::Process( const AoC::DataPtr& data )
+Result::ProcessGeneral( const AoC::DataPtr& data )
 {
 	const Data* ourData = dynamic_cast< const Data* >( data.get( ) );
 

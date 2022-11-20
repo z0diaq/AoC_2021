@@ -32,7 +32,7 @@ export namespace life_support_data
 		Result( );
 
 		virtual void Init( ) override;
-		virtual bool Process( const AoC::DataPtr& data ) override;
+		virtual bool ProcessGeneral( const AoC::DataPtr& data ) override;
 		virtual uint64_t Finish( ) const override;
 		virtual void Teardown( ) override;
 
@@ -69,7 +69,7 @@ life_support_data::Result::Teardown( )
 }
 
 bool
-life_support_data::Result::Process( const AoC::DataPtr& data )
+life_support_data::Result::ProcessGeneral( const AoC::DataPtr& data )
 {
 	const Data* ourData = dynamic_cast< const Data* >( data.get( ) );
 	m_usedBits = ourData->m_usedBits;

@@ -16,7 +16,6 @@ export namespace binary_diagnostic
 		Epsilon
 	};
 
-
 	class Result : public AoC::Result
 	{
 
@@ -24,7 +23,7 @@ export namespace binary_diagnostic
 		Result( );
 
 		virtual void Init( ) override;
-		virtual bool Process( const AoC::DataPtr& data ) override;
+		virtual bool ProcessGeneral( const AoC::DataPtr& data ) override;
 		virtual uint64_t Finish( ) const override;
 		virtual void Teardown( ) override;
 
@@ -56,7 +55,7 @@ binary_diagnostic::Result::Teardown( )
 }
 
 bool
-binary_diagnostic::Result::Process( const AoC::DataPtr& data )
+binary_diagnostic::Result::ProcessGeneral( const AoC::DataPtr& data )
 {
 	const binary_diagnostic::Data* ourData = static_cast< const binary_diagnostic::Data* >( data.get( ) );
 	//one time init

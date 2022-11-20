@@ -24,7 +24,7 @@ export namespace giant_squid
 		Result( );
 
 		virtual void Init( ) override;
-		virtual bool Process( const AoC::DataPtr& data ) override;
+		virtual bool ProcessGeneral( const AoC::DataPtr& data ) override;
 		virtual uint64_t Finish( ) const override;
 		virtual void Teardown( ) override;
 
@@ -85,7 +85,7 @@ giant_squid::Result::Teardown( )
 }
 
 bool
-giant_squid::Result::Process( const AoC::DataPtr& data )
+giant_squid::Result::ProcessGeneral( const AoC::DataPtr& data )
 {
 	const Data* ourData = dynamic_cast< const Data* >( data.get( ) );
 	if( false == ourData->m_board.IsFilled( ) )

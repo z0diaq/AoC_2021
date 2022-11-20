@@ -15,7 +15,7 @@ export namespace dive
 		Result( );
 
 		virtual void Init( ) override;
-		virtual bool Process( const AoC::DataPtr& data ) override;
+		virtual bool ProcessGeneral( const AoC::DataPtr& data ) override;
 		virtual uint64_t Finish( ) const override;
 		virtual void Teardown( ) override;
 
@@ -44,7 +44,7 @@ dive::Result::Teardown( )
 }
 
 bool
-dive::Result::Process( const AoC::DataPtr& data )
+dive::Result::ProcessGeneral( const AoC::DataPtr& data )
 {
 	const dive::Data* ourData = static_cast< const dive::Data* >( data.get( ) );
 	if( ourData->m_y )

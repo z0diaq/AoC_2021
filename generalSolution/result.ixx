@@ -34,7 +34,20 @@ export namespace AoC
         virtual void Init( ) = 0;
         //result eq true means source data was fully consumed and can be reset now
         //          false means it can't be cleared yet
-        virtual bool Process( const DataPtr& data ) = 0;
+        virtual bool ProcessOne( const DataPtr& data )
+        {
+            throw std::logic_error( "This method should be overriden" );
+        }
+
+        virtual bool ProcessTwo( const DataPtr& data )
+        {
+            throw std::logic_error( "This method should be overriden" );
+        }
+
+        virtual bool ProcessGeneral( const DataPtr& data )
+        {
+            throw std::logic_error( "This method should be overriden" );
+        }
         virtual uint64_t Finish( ) const = 0;
         virtual void Teardown( ) = 0;
 
@@ -46,6 +59,7 @@ export namespace AoC
     protected:
         AoC::Input m_input;
         DataPtr    m_data;
+        bool       m_haveDedicatedProcessing = false;
 
         bool IsPartOne( ) const;
         bool IsPartTwo( ) const;
@@ -107,13 +121,17 @@ AoC::Result::InternalExecute( const std::string& filename )
 
     uint64_t accumulated{0u};
 
+    auto Process = &Result::ProcessGeneral;
+    if( m_haveDedicatedProcessing )
+        Process = ( m_stage == Stage::PART_ONE ? &Result::ProcessOne : &Result::ProcessTwo );
+
     try
     {
         this->Init( );
 
         while( m_input.Next( m_data ) )
         {
-            if( this->Process( m_data ) )
+            if( ( this->*Process )( m_data ))
                 m_data->Reset( );
         }
 

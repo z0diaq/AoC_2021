@@ -2,7 +2,7 @@ import sesese;
 
 #include <iostream>
 
-//#define HAVE_PART2
+#define HAVE_PART2
 
 int main( )
 {
