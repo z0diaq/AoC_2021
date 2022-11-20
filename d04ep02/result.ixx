@@ -5,7 +5,10 @@ module;
 #include <algorithm>
 #include <sstream>
 
+#if 0
+//todo: check this after VS repair
 #include <boost/algorithm/string.hpp>
+#endif
 
 export module giant_squid;
 
@@ -28,6 +31,7 @@ export namespace giant_squid
 	private:
 
 		void ReadDrawnNumbers( );
+		std::deque<std::string> GetTokens( const std::string numbersLine ) const;
 		std::deque<unsigned int> m_drawnNumbers;
 		mutable std::deque<Board> m_boards;
 	};
@@ -56,13 +60,7 @@ giant_squid::Result::ReadDrawnNumbers( )
 		throw std::exception( "Could not read drawn numbers line!" );
 	}
 
-	std::deque<std::string> tokens;
-
-	boost::split(
-		tokens,
-		numbersLine,
-		boost::is_any_of( ", " ),
-		boost::token_compress_on );
+	std::deque<std::string> tokens = GetTokens( numbersLine );
 
 	m_drawnNumbers.resize( tokens.size( ) );
 	std::transform(
@@ -132,4 +130,33 @@ have_result:
 		<< std::endl;
 
 	return computedValue;
+}
+
+std::deque<std::string>
+giant_squid::Result::GetTokens( const std::string numbersLine ) const
+{
+	std::deque<std::string> result;
+	std::string token;
+
+	for( const char c : numbersLine )
+	{
+		if( false == std::isdigit( c ) )
+		{
+			if( false == token.empty( ) )
+			{
+				result.push_back( std::move( token ) );
+			}
+		}
+		else
+		{
+			token.push_back( c );
+		}
+	}
+
+	if( false == token.empty( ) )
+	{
+		result.push_back( std::move( token ) );
+	}
+
+	return result;
 }
