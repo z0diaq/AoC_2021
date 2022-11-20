@@ -47,6 +47,7 @@ export namespace AoC
         AoC::Input m_input;
         DataPtr    m_data;
 
+        bool IsPartOne( ) const;
         bool IsPartTwo( ) const;
 
     private:
@@ -158,6 +159,12 @@ AoC::Result::CheckResult( const uint64_t computed, const uint64_t expected, cons
     std::cout << "INFO: SUCCESS - computed value matches expected" << std::endl;
 
     return ResultType::PASSED;
+}
+
+bool
+AoC::Result::IsPartOne( ) const
+{
+    return m_stage == Stage::PART_ONE;
 }
 
 bool
