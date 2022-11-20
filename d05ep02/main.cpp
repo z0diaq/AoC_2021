@@ -6,5 +6,5 @@ int main( )
 {
     hydrothermal_venture::Result result;
 
-    return result.Execute( 12u, 19663u ) == AoC::ResultType::FAILED;
+    return result.Execute( 12u, 20012u ) == AoC::ResultType::FAILED;
 }
