@@ -5,7 +5,9 @@ module;
 #include <algorithm>
 #include <sstream>
 
-#if 0
+#define USE_BOOST
+
+#ifdef USE_BOOST
 //todo: check this after VS repair
 #include <boost/algorithm/string.hpp>
 #endif
@@ -60,7 +62,16 @@ giant_squid::Result::ReadDrawnNumbers( )
 		throw std::exception( "Could not read drawn numbers line!" );
 	}
 
+#ifdef USE_BOOST
+	std::deque<std::string> tokens;
+	boost::split(
+		tokens,
+		numbersLine,
+		boost::is_any_of(", "),
+		boost::token_compress_on);
+#else
 	std::deque<std::string> tokens = GetTokens( numbersLine );
+#endif
 
 	m_drawnNumbers.resize( tokens.size( ) );
 	std::transform(
