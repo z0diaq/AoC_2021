@@ -36,17 +36,17 @@ export namespace AoC
         //          false means it can't be cleared yet
         virtual bool ProcessOne( const DataPtr& data )
         {
-            throw std::logic_error( "This method should be overriden" );
+            throw std::logic_error( "ProcessOne method should be overriden" );
         }
 
         virtual bool ProcessTwo( const DataPtr& data )
         {
-            throw std::logic_error( "This method should be overriden" );
+            throw std::logic_error( "ProcessTwo method should be overriden" );
         }
 
         virtual bool ProcessGeneral( const DataPtr& data )
         {
-            throw std::logic_error( "This method should be overriden" );
+            throw std::logic_error( "ProcessGeneral method should be overriden" );
         }
         virtual uint64_t Finish( ) const = 0;
         virtual void Teardown( ) = 0;
@@ -121,13 +121,13 @@ AoC::Result::InternalExecute( const std::string& filename )
 
     uint64_t accumulated{0u};
 
-    auto Process = &Result::ProcessGeneral;
-    if( m_haveDedicatedProcessing )
-        Process = ( m_stage == Stage::PART_ONE ? &Result::ProcessOne : &Result::ProcessTwo );
-
     try
     {
         this->Init( );
+
+        auto Process = &Result::ProcessGeneral;
+		if( m_haveDedicatedProcessing )
+			Process = ( m_stage == Stage::PART_ONE ? &Result::ProcessOne : &Result::ProcessTwo );
 
         while( m_input.Next( m_data ) )
         {
