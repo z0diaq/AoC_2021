@@ -13,7 +13,7 @@ int main( )
 
 #ifdef HAVE_PART2
     std::cout << std::endl << "#### PART 2:" << std::endl;
-    auto resultPart2 = result.Execute( 61229, 0, AoC::Stage::PART_TWO );
+    auto resultPart2 = result.Execute( 61229, 1'091'165, AoC::Stage::PART_TWO );
 
     return
         resultPart1 == AoC::ResultType::FAILED ||

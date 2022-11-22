@@ -5,11 +5,13 @@ module;
 #include <array>
 #include <algorithm>
 #include <numeric>
+#include <string>
 
 export module sesese;
 
 export import :data;
 
+//sesese => SEvent SEgments SEarch
 export namespace sesese
 {
 
@@ -26,7 +28,16 @@ export namespace sesese
 		virtual void Teardown( ) override;
 
 	private:
-		unsigned int m_foundCount;
+
+		//stage 1
+		uint64_t m_accumulated;
+
+		//stage 2
+		std::string m_mappedDigits[ 10 ];
+
+		void FindMapping( std::array<std::string, 10> digits );
+		int DecodeDigit( std::string view );
+		const std::string& Normalize( std::string& str ) const;
 	};
 }
 
@@ -40,7 +51,7 @@ void
 Result::Init( )
 {
 	m_data.reset( new sesese::Data( ) );
-	m_foundCount = 0;
+	m_accumulated = 0;
 	m_haveDedicatedProcessing = true;
 }
 
@@ -55,7 +66,7 @@ Result::ProcessOne( const AoC::DataPtr& data )
 {
 	const Data* ourData = dynamic_cast< const Data* >( data.get( ) );
 
-	m_foundCount += static_cast<unsigned int>( std::count_if(
+	m_accumulated += static_cast<uint64_t>( std::count_if(
 		ourData->m_testData.begin( ),
 		ourData->m_testData.end( ),
 		[ ]( const std::string& segments )
@@ -80,18 +91,31 @@ Result::ProcessTwo( const AoC::DataPtr& data )
 {
 	const Data* ourData = dynamic_cast< const Data* >( data.get( ) );
 
-	auto digits = ourData->m_digits;
-	//need to sort data first so std::set_union can be used
-	for( auto& digit : digits )
-		std::sort( digit.begin( ), digit.end( ) );
+	FindMapping( ourData->m_digits );
 
-	auto findFirstDigitWithNSegments = [ &digits ]( size_t length ) -> std::string
+	int result = 0;
+	for( const auto& digit : ourData->m_testData )
 	{
-		return *std::find_if( digits.begin( ), digits.end( ), [ length ]( const std::string& digit ) -> bool
-			{
-				return digit.length( ) == length;
-			} );
-	};
+		result = 10 * result + DecodeDigit( digit );
+	}
+
+	m_accumulated += result;
+
+	return true;
+}
+
+void
+Result::FindMapping( std::array<std::string, 10> digits )
+{
+	//sort - shortest front
+	std::sort( digits.begin( ), digits.end( ), [ ]( const std::string& lhs, const std::string& rhs )
+	{
+		return lhs.length( ) < rhs.length( );
+	} );
+
+	//normalize each word
+	for( auto& digit : digits )
+		Normalize( digit );
 
 	auto segmentSum = [ ](
 		const std::string& left,
@@ -108,25 +132,83 @@ Result::ProcessTwo( const AoC::DataPtr& data )
 	auto findSegmentsDifference = [ ](
 		const std::string& left,
 		const std::string& right,
-		size_t expectedSize ) -> std::string
+		size_t expectedSize,
+		bool enforceLength = true ) -> std::string
 	{
 		std::string result;
 		for( auto c : left )
 			if( right.find( c, 0 ) == std::string::npos )
 				result.push_back( c );
 		if( result.size( ) != expectedSize )
-			throw std::logic_error( "Does not match expected size!" );
+		{
+			if( enforceLength )
+				throw std::logic_error( "Difference not expected" );
+			return "";
+		}
+
 		return result;
 	};
 
-	auto one = findFirstDigitWithNSegments( 2 ),
-		four = findFirstDigitWithNSegments( 4 ),
-		seven = findFirstDigitWithNSegments( 3 ),
-		eight = findFirstDigitWithNSegments( 7 );
-	char topSegment = findSegmentsDifference( seven, one, 1 ).front( );
-	//char topRightSegment = findSegmentsDifference(  )
-	//auto leftAndBottom = findSegmentsDifference( );
-	std::string a;
+	auto one = digits[ 0 ],
+		four = digits[ 2 ],
+		seven = digits[ 1 ],
+		eight = digits[ 9 ];
+	auto a = findSegmentsDifference( seven, one, 1 );
+	auto bd = findSegmentsDifference( four, one, 2 );
+	auto eg = findSegmentsDifference( eight, one + a + bd, 2 );
+
+	//g is when from group 069 we find single diff against 4 + a
+	std::string g;
+	for( int no = 6; no < 9 && g.empty( ); ++no )
+	{
+		g = findSegmentsDifference(
+			digits[ no ],
+			four + a,
+			1,
+			false );
+	}
+
+	//d is when from group 235 we find single diff against 1 + a + g
+	std::string d;
+	for( int no = 3; no < 6 && d.empty( ); ++no )
+	{
+		d = findSegmentsDifference(
+			digits[ no ],
+			one + a + g,
+			1,
+			false );
+	}
+
+	std::string b = findSegmentsDifference( four, one + d, 1 );
+	std::string e = findSegmentsDifference( eg, g, 1 );
+
+
+	//c is when from group 235 we find single diff against a + d + eg
+	std::string c;
+	for( int no = 3; no < 6 && c.empty( ); ++no )
+	{
+		c = findSegmentsDifference(
+			digits[ no ],
+			a + d + eg,
+			1,
+			false );
+	}
+	std::string f = findSegmentsDifference( one, c, 1 );
+
+	m_mappedDigits[ 0 ] = a + b + c + e + f + g;
+	m_mappedDigits[ 1 ] = one;
+	m_mappedDigits[ 2 ] = a + c + d + e + g;
+	m_mappedDigits[ 3 ] = a + c + d + f + g;
+	m_mappedDigits[ 4 ] = four;
+	m_mappedDigits[ 5 ] = a + b + d + f + g;
+	m_mappedDigits[ 6 ] = m_mappedDigits[ 5 ] + e;
+	m_mappedDigits[ 7 ] = seven;
+	m_mappedDigits[ 8 ] = eight;
+	m_mappedDigits[ 9 ] = findSegmentsDifference( eight, e, 6 );
+
+	for( auto& digit : m_mappedDigits )
+		Normalize( digit );
+
 	/*
 	0 -> 6 seg
 	1 -> 2 seg
@@ -146,19 +228,35 @@ Result::ProcessTwo( const AoC::DataPtr& data )
 	6 seg -> 0,6,9
 	7 seg -> 8
 	*/
+}
 
-	return true;
+int
+Result::DecodeDigit( std::string digit )
+{
+	Normalize( digit );
+
+	for( int pos = 0; pos != 10; ++pos )
+		if( m_mappedDigits[ pos ] == digit )
+			return pos;
+
+	throw std::logic_error( "Could not find mapping" );
 }
 
 uint64_t
 Result::Finish( ) const
 {
-	uint64_t computedValue = m_foundCount;
-
 	std::cout
 		<< "result = "
-		<< computedValue
+		<< m_accumulated
 		<< std::endl;
 
-	return computedValue;
+	return m_accumulated;
+}
+
+const std::string&
+Result::Normalize( std::string& str ) const
+{
+	std::sort( str.begin( ), str.end( ) );
+
+	return str;
 }
