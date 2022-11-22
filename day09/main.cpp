@@ -2,14 +2,14 @@ import smoke;
 
 #include <iostream>
 
-#define HAVE_PART2
+//#define HAVE_PART2
 
 int main( )
 {
     smoke::Result result;
 
     std::cout << "#### PART 1:" << std::endl;
-    auto resultPart1 = result.Execute( 0, 0 );
+    auto resultPart1 = result.Execute( 15, 530 );
 
 #ifdef HAVE_PART2
     std::cout << std::endl << "#### PART 2:" << std::endl;

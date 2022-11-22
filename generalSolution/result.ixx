@@ -36,18 +36,19 @@ export namespace AoC
         //          false means it can't be cleared yet
         virtual bool ProcessOne( const DataPtr& data )
         {
-            throw std::logic_error( "ProcessOne method should be overriden" );
+            throw std::logic_error( "ProcessOne method should be overridden" );
         }
 
         virtual bool ProcessTwo( const DataPtr& data )
         {
-            throw std::logic_error( "ProcessTwo method should be overriden" );
+            throw std::logic_error( "ProcessTwo method should be overridden" );
         }
 
         virtual bool ProcessGeneral( const DataPtr& data )
         {
-            throw std::logic_error( "ProcessGeneral method should be overriden" );
+            throw std::logic_error( "ProcessGeneral method should be overridden" );
         }
+
         virtual uint64_t Finish( ) const = 0;
         virtual void Teardown( ) = 0;
 

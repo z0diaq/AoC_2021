@@ -2,6 +2,7 @@ module;
 
 //imports
 #include <iostream>
+#include <deque>
 
 export module smoke;
 
@@ -24,9 +25,13 @@ export namespace smoke
 		virtual void Teardown( ) override;
 
 	private:
+		std::deque<Data::DataLine> m_heightmap;
 
-		//stage 1
-		uint64_t m_accumulated;
+		bool IsLowPoint( uint32_t column, uint32_t row ) const;
+		uint32_t RiskLevel( uint32_t column, uint32_t row ) const;
+		uint32_t Width( ) const;
+		uint32_t Height( ) const;
+		uint8_t Value( uint32_t column, uint32_t row ) const;
 	};
 }
 
@@ -40,7 +45,6 @@ void
 Result::Init( )
 {
 	m_data.reset( new smoke::Data( ) );
-	m_accumulated = 0;
 	m_haveDedicatedProcessing = true;
 }
 
@@ -48,11 +52,14 @@ void
 Result::Teardown( )
 {
 	m_data.reset( );
+	m_heightmap.clear( );
 }
 
 bool
 Result::ProcessOne( const AoC::DataPtr& data )
 {
+	m_heightmap.push_back( static_cast< smoke::Data* >( data.get( ))->m_dataLine );
+
 	return true;//drop data, we used all
 }
 
@@ -65,10 +72,60 @@ Result::ProcessTwo( const AoC::DataPtr& data )
 uint64_t
 Result::Finish( ) const
 {
+	uint64_t accumulated = 0;
+	for( uint32_t row = 0; row < Height( ); ++row )
+	{
+		for( uint32_t column = 0; column < Width( ); ++column )
+		{
+			if( IsLowPoint( column, row ) )
+				accumulated += RiskLevel( column, row );
+		}
+	}
+
 	std::cout
 		<< "result = "
-		<< m_accumulated
+		<< accumulated
 		<< std::endl;
 
-	return m_accumulated;
+	return accumulated;
+}
+
+bool
+Result::IsLowPoint( uint32_t column, uint32_t row ) const
+{
+	auto ourValue = Value( column, row );
+	if( column > 0 && Value( column - 1, row ) <= ourValue )
+		return false;
+	if( column < ( Width( ) - 1 ) && Value( column + 1, row ) <= ourValue )
+		return false;
+	if( row > 0 && Value( column, row - 1 ) <= ourValue )
+		return false;
+	if( row < ( Height( ) - 1 ) && Value( column, row + 1 ) <= ourValue )
+		return false;
+
+	return true;
+}
+
+uint32_t
+Result::RiskLevel( uint32_t column, uint32_t row ) const
+{
+	return Value( column, row ) + 1;
+}
+
+uint32_t
+Result::Width( ) const
+{
+	return static_cast< uint32_t >( m_heightmap.front( ).size( ) );
+}
+
+uint32_t
+Result::Height( ) const
+{
+	return static_cast< uint32_t >( m_heightmap.size( ) );
+}
+
+uint8_t
+Result::Value( uint32_t column, uint32_t row ) const
+{
+	return m_heightmap[ row ][ column ];
 }
