@@ -24,6 +24,15 @@
     <ClCompile Include="result.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="partTwoSolver.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="partTwoSolver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="result.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="input.txt" />

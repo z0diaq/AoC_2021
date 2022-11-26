@@ -2,7 +2,7 @@ import smoke;
 
 #include <iostream>
 
-//#define HAVE_PART2
+#define HAVE_PART2
 
 int main( )
 {
@@ -13,7 +13,7 @@ int main( )
 
 #ifdef HAVE_PART2
     std::cout << std::endl << "#### PART 2:" << std::endl;
-    auto resultPart2 = result.Execute( 0, 0, AoC::Stage::PART_TWO );
+    auto resultPart2 = result.Execute( 1134, 1'019'494, AoC::Stage::PART_TWO );
 
     return
         resultPart1 == AoC::ResultType::FAILED ||

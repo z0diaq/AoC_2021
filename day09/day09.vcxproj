@@ -130,7 +130,10 @@
   <ItemGroup>
     <ClCompile Include="data.ixx" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="partTwoSolver.cpp" />
+    <ClCompile Include="result.cpp" />
     <ClCompile Include="result.ixx" />
+    <ClCompile Include="partTwoSolver.ixx" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="input.txt" />
