@@ -10,7 +10,6 @@ export import :data;
 //smoke => SEvent SEgments SEarch
 export namespace aoc_template
 {
-
 	class Result : public AoC::Result
 	{
 
@@ -18,6 +17,7 @@ export namespace aoc_template
 		Result( );
 
 		virtual void Init( ) override;
+		virtual bool ProcessGeneral( const AoC::DataPtr& data ) override;
 		virtual bool ProcessOne( const AoC::DataPtr& data ) override;
 		virtual bool ProcessTwo( const AoC::DataPtr& data ) override;
 		virtual uint64_t Finish( ) const override;
@@ -25,8 +25,11 @@ export namespace aoc_template
 
 	private:
 
-		//stage 1
-		uint64_t m_accumulated;
+		//part one section
+		virtual uint64_t FinishPartOne( ) const;
+
+		//part two section
+		virtual uint64_t FinishPartTwo( ) const;
 	};
 }
 
@@ -40,7 +43,6 @@ void
 Result::Init( )
 {
 	m_data.reset( new aoc_template::Data( ) );
-	m_accumulated = 0;
 	m_haveDedicatedProcessing = true;
 }
 
@@ -65,10 +67,23 @@ Result::ProcessTwo( const AoC::DataPtr& data )
 uint64_t
 Result::Finish( ) const
 {
+	const uint64_t result = IsPartOne( ) ? FinishPartOne( ) : FinishPartTwo( );
 	std::cout
 		<< "result = "
-		<< m_accumulated
+		<< result
 		<< std::endl;
 
-	return m_accumulated;
+	return result;
+}
+
+uint64_t
+Result::FinishPartOne( ) const
+{
+	return 0;
+}
+
+uint64_t
+Result::FinishPartTwo( ) const
+{
+	return 0;
 }
