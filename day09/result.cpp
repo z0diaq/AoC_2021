@@ -34,7 +34,20 @@ Result::ProcessGeneral( const AoC::DataPtr& data )
 uint64_t
 Result::Finish( ) const
 {
-	uint64_t processingResult = 0;
+	uint64_t processingResult = IsPartOne( ) ? FinishPartOne( ) : FinishPartTwo( );
+
+	std::cout
+		<< "result = "
+		<< processingResult
+		<< std::endl;
+
+	return processingResult;
+}
+
+uint32_t
+Result::FinishPartOne( ) const
+{
+	uint32_t processingResult = 0;
 	PartTwoSolver data( this );
 
 	std::priority_queue<uint32_t> stageTwoBasinSizes;
@@ -44,23 +57,32 @@ Result::Finish( ) const
 		{
 			if( IsLowPoint( { column, row } ) )
 			{
-				if( IsPartOne( ) )
-					processingResult += RiskLevel( { column, row } );
-				else
-					data.AnalyzeBasin( { column, row } );
+				processingResult += RiskLevel( { column, row } );
 			}
 		}
 	}
 
-	if( IsPartTwo( ) )
-		processingResult = data.ComputeResult( );
-
-	std::cout
-		<< "result = "
-		<< processingResult
-		<< std::endl;
-
 	return processingResult;
+}
+
+uint32_t
+Result::FinishPartTwo( ) const
+{
+	PartTwoSolver data( this );
+
+	std::priority_queue<uint32_t> stageTwoBasinSizes;
+	for( uint32_t row = 0; row < Height( ); ++row )
+	{
+		for( uint32_t column = 0; column < Width( ); ++column )
+		{
+			if( IsLowPoint( { column, row } ) )
+			{
+				data.AnalyzeBasin( { column, row } );
+			}
+		}
+	}
+
+	return data.ComputeResult( );
 }
 
 bool

@@ -28,6 +28,10 @@ export namespace smoke
 		bool IsLowPoint( const Point& point ) const;
 
 		//stage one only
+		uint32_t FinishPartOne( ) const;
 		uint32_t RiskLevel( const Point& point ) const;
+
+		//part two only
+		uint32_t FinishPartTwo( ) const;
 	};
 }
