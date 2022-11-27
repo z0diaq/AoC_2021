@@ -2,7 +2,7 @@ import syntax_scoring;
 
 #include <iostream>
 
-//#define HAVE_PART2
+#define HAVE_PART2
 
 int main( )
 {
@@ -13,7 +13,7 @@ int main( )
 
 #ifdef HAVE_PART2
     std::cout << std::endl << "#### PART 2:" << std::endl;
-    auto resultPart2 = result.Execute( 0, 0, AoC::Stage::PART_TWO );
+    auto resultPart2 = result.Execute( 288'957u, 2'769'449'099u, AoC::Stage::PART_TWO );
 
     return
         resultPart1 == AoC::ResultType::FAILED ||

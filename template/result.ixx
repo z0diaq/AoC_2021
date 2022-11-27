@@ -53,6 +53,12 @@ Result::Teardown( )
 }
 
 bool
+Result::ProcessGeneral( const AoC::DataPtr& data )
+{
+	return true;//drop data, we used all
+}
+
+bool
 Result::ProcessOne( const AoC::DataPtr& data )
 {
 	return true;//drop data, we used all
