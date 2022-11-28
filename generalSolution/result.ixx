@@ -49,7 +49,8 @@ export namespace AoC
 			throw std::logic_error( "ProcessGeneral method should be overridden" );
 		}
 
-		virtual uint64_t Finish( ) const = 0;
+		virtual uint64_t Finish( ) const { return 0; }
+		virtual uint64_t FinishMutate( ) { return 0; }
 		virtual void Teardown( ) = 0;
 
 		virtual ResultType Execute(
@@ -136,7 +137,7 @@ AoC::Result::InternalExecute( const std::string& filename )
 				m_data->Reset( );
 		}
 
-		accumulated = this->Finish( );
+		accumulated = this->Finish( ) + this->FinishMutate( );
 	}
 	catch( const std::exception& e )
 	{
