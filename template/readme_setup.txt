@@ -5,3 +5,9 @@ To create new project
 - if required add boost dependency - $(MY_LIBS)\boost_1_80_0
 - code solution :)
 - profit!
+
+prepare solution
+- modify main - add known test value for part 1
+- prepare solution for part 1
+- repeat above for part 2
+- profit!
