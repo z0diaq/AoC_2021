@@ -22,25 +22,25 @@ export namespace dumbo_octopus
 
 		virtual void Init( ) override;
 		virtual bool ProcessGeneral( const AoC::DataPtr& data ) override;
-		virtual bool ProcessOne( const AoC::DataPtr& data ) override;
-		virtual bool ProcessTwo( const AoC::DataPtr& data ) override;
 		virtual uint64_t FinishMutate( ) override;
 		virtual void Teardown( ) override;
 
 	private:
 
-		//part one section
+		//shared section
 		size_t                   m_width;
 		std::vector<std::string> m_cavernMap;
-		uint32_t                 m_totalFlashes;
+		uint64_t                 m_totalFlashes;
 
-		virtual uint64_t FinishPartOne( );
 		void Iterate( );
 		bool Step( size_t row, size_t column, bool skipFlashed = false );
 		uint32_t TestFlash( size_t row, size_t column );
 
+		//part one section
+		virtual uint64_t FinishPartOne( );
+
 		//part two section
-		virtual uint64_t FinishPartTwo( ) const;
+		virtual uint64_t FinishPartTwo( );
 	};
 }
 
@@ -54,7 +54,7 @@ void
 Result::Init( )
 {
 	m_data.reset( new dumbo_octopus::Data( ) );
-	m_haveDedicatedProcessing = true;
+	m_haveDedicatedProcessing = false;
 	m_totalFlashes = 0;
 }
 
@@ -68,20 +68,8 @@ Result::Teardown( )
 bool
 Result::ProcessGeneral( const AoC::DataPtr& data )
 {
-	return true;//drop data, we used all
-}
-
-bool
-Result::ProcessOne( const AoC::DataPtr& data )
-{
 	m_cavernMap.push_back( std::move( static_cast< dumbo_octopus::Data* >( data.get( ) )->m_data ) );
 	m_width = m_cavernMap[ 0 ].length( );
-	return true;//drop data, we used all
-}
-
-bool
-Result::ProcessTwo( const AoC::DataPtr& data )
-{
 	return true;//drop data, we used all
 }
 
@@ -167,7 +155,14 @@ Result::TestFlash( size_t row, size_t column )
 }
 
 uint64_t
-Result::FinishPartTwo( ) const
+Result::FinishPartTwo( )
 {
-	return 0;
+	const size_t allFlashed = m_width * m_cavernMap.size( );
+	for( size_t step = 0; ; ++step )
+	{
+		m_totalFlashes = 0;
+		Iterate( );
+		if( m_totalFlashes == allFlashed )
+			return step + 1;
+	}
 }
