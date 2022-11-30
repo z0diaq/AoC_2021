@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="data.ixx" />
     <ClCompile Include="input.ixx" />
+    <ClCompile Include="result.cpp" />
     <ClCompile Include="result.ixx" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -83,6 +84,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(MY_LIBS)\boost_1_80_0;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>

@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="data">
+      <UniqueIdentifier>{651b306d-3880-4f2b-86ad-d2b4e9f218b3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="data.ixx">
@@ -26,7 +29,23 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="input.txt" />
-    <Text Include="input_test.txt" />
+    <Text Include="sample_input_a.txt">
+      <Filter>data</Filter>
+    </Text>
+    <Text Include="input.txt">
+      <Filter>data</Filter>
+    </Text>
+    <Text Include="input_result_part1.txt">
+      <Filter>data</Filter>
+    </Text>
+    <Text Include="input_result_part2.txt">
+      <Filter>data</Filter>
+    </Text>
+    <Text Include="sample_input_a_result_part1.txt">
+      <Filter>data</Filter>
+    </Text>
+    <Text Include="sample_input_a_result_part2.txt">
+      <Filter>data</Filter>
+    </Text>
   </ItemGroup>
 </Project>

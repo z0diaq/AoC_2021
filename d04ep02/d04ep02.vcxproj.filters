@@ -13,10 +13,23 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="data">
+      <UniqueIdentifier>{a465e841-31fd-432b-af8e-e349bd41c696}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="input.txt" />
-    <Text Include="input_test.txt" />
+    <Text Include="sample_input_a.txt">
+      <Filter>data</Filter>
+    </Text>
+    <Text Include="input.txt">
+      <Filter>data</Filter>
+    </Text>
+    <Text Include="input_result_part2.txt">
+      <Filter>data</Filter>
+    </Text>
+    <Text Include="sample_input_a_result_part2.txt">
+      <Filter>data</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\d04ep01\data.ixx">

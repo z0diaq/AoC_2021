@@ -1,10 +1,8 @@
 import dive;
 
-#include <iostream>
+#include <compare>
 
 int main( )
 {
-    dive::Result result;
-
-    return result.Execute( 900u, 1864715580u ) == AoC::ResultType::FAILED;
+    return dive::Result( ).Execute( );
 }

@@ -1,10 +1,8 @@
 import hydrothermal_venture;
 
-#include <iostream>
+#include <compare>
 
 int main( )
 {
-    hydrothermal_venture::Result result;
-
-    return result.Execute( 5u, 7142u ) == AoC::ResultType::FAILED;
+    return hydrothermal_venture::Result( ).Execute( );
 }
