@@ -1,6 +1,7 @@
 PLEASE READ TILL END (very important info at the end)
 
 Required setup:
+- requires Visual Studio with C++20 support - works nicely with Community Edition
 - some projects rely on boost libraries so You need to setup them first
 - go to boost.org and download latest zip/7z - as of current day it is 1.80.0
 - extract it somewhere - I use c:\dev\libs, so full path is c:\dev\libs\boost_1_80_0
