@@ -48,11 +48,6 @@ AoC::Result::Execute( )
 				if( resultStream.is_open( ) )
 					resultStream >> expectedResult;
 			}
-			else
-			{
-				std::cout << std::endl << "NOTICE: " << resultPath << " does not exist" << std::endl;
-				continue;
-			}
 
 			if( FAILED == this->CheckResult(
 				this->InternalExecute( filename, partNo == 1 ),
