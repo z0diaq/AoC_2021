@@ -4,7 +4,7 @@ Required setup:
 - some projects rely on boost libraries so You need to setup them first
 - go to boost.org and download latest zip/7z - as of current day it is 1.80.0
 - extract it somewhere - I use c:\dev\libs, so full path is c:\dev\libs\boost_1_80_0
-- BEFORE starting visual studio add new env variable - simplest way is to use windows' shell (menu start -> cmd) and type this: "setx MY_LIBS c:\dev\libs" (without quotes) - this will create env var that is preserved between OS restarts
+- BEFORE starting visual studio add new env variable - simplest way is to use windows' shell (menu start -> cmd) and type this: "setx MY_LIBS c:\dev\libs" (without quotes, might require privilged account since it makes system/env wide change) - this will create env var that is preserved between OS restarts
 - now VS will be able to expand it in each project's setings - if You different name (not MY_LIBS) then remember to update all projects or You will get failures about missing boost files
 
 To create new project
