@@ -150,8 +150,6 @@
     <ClCompile Include="result.ixx" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="input.txt" />
-    <Text Include="input_result_part1.txt" />
     <Text Include="sample_input_a.txt" />
     <Text Include="sample_input_a_result_part1.txt" />
   </ItemGroup>

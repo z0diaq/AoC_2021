@@ -362,5 +362,5 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
-# private leaderboard test data
-input_private*.txt
+# make sure input files are ignored
+input*.txt

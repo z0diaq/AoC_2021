@@ -111,6 +111,17 @@ Result::FinishPartTwo( ) const
 	return 0;
 }
 
+template<typename T>
+void RemoveSingleElement( std::vector<T>& vec, const T& value )
+{
+	auto it = std::find( vec.begin( ), vec.end( ), value );
+	if( it != vec.end( ) )
+	{
+		std::swap( *it, vec.back( ) );
+		vec.resize( vec.size( ) - 1 );
+	}
+}
+
 std::vector<std::string>
 GetAllPaths(
 	std::map<std::string, Result::ConnectionList> caveMap,
@@ -142,7 +153,8 @@ GetAllPaths(
 		if( IsSmallCave( startingPoint ) )
 		{
 			for( auto link : connections )
-				std::erase( tempMap[ link ], startingPoint );
+				RemoveSingleElement( tempMap[ link ], startingPoint );
+				//std::erase( tempMap[ link ], startingPoint );
 		}
 
 		//can't go again into small cave from any direction
@@ -150,7 +162,8 @@ GetAllPaths(
 		{
 			auto links = tempMap[ connection ];
 			for( auto link : links )
-				std::erase( tempMap[ link ], connection );
+				RemoveSingleElement( tempMap[ link ], connection );
+				//std::erase( tempMap[ link ], connection );
 		}
 
 		if( connection == "end" )
