@@ -10,6 +10,7 @@ module;
 //1>C:\<projects>\AoC_2021\d04ep01\result.ixx(129,1): fatal  error C1001: Internal compiler error.
 //1 > ( compiler file 'D:\a\_work\1\s\src\vctools\Compiler\CxxFE\sl\p1\c\module\writer.cpp', line 1277 )..
 #include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/classification.hpp>
 #endif
 
 export module giant_squid;

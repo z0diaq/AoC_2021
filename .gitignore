@@ -362,5 +362,5 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 
-# make sure input files are ignored
-input*.txt
+# make sure secret dir stays secret
+secret/

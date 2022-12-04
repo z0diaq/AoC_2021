@@ -143,11 +143,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ProjectReference Include="..\generalSolution\generalSolution.vcxproj">
-      <Project>{fa8fc1ee-bfe7-4c26-accd-850ec1b40eb8}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="data.ixx" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="result.ixx" />
@@ -156,6 +151,11 @@
     <Text Include="sample_input_a.txt" />
     <Text Include="sample_input_a_result_part1.txt" />
     <Text Include="sample_input_a_result_part2.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AoC_old\AoC_old.vcxproj">
+      <Project>{d313bc2b-4992-4c10-824e-5913005d5659}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -6,7 +6,7 @@ module;
 
 export module passage_pathing;
 
-export import :data;
+import AoC;
 
 export namespace passage_pathing
 {
@@ -16,13 +16,12 @@ export namespace passage_pathing
 	public:
 		typedef std::vector<std::string> ConnectionList;
 
-		Result( );
+		Result( ) = default;
 
-		virtual void Init( ) override;
-		virtual bool ProcessGeneral( const AoC::DataPtr& data ) override;
-		virtual bool ProcessOne( const AoC::DataPtr& data ) override;
-		virtual bool ProcessTwo( const AoC::DataPtr& data ) override;
-		virtual uint64_t Finish( ) const override;
+		virtual void Init( ) override { };
+		virtual void ProcessOne( const std::string& data ) override;
+		virtual void ProcessTwo( const std::string& data ) override;
+		virtual uint64_t Finish( ) override;
 		virtual void Teardown( ) override;
 
 	private:
@@ -38,44 +37,24 @@ export namespace passage_pathing
 
 using namespace passage_pathing;
 
-Result::Result( )
-{
-}
-
-void
-Result::Init( )
-{
-	m_data.reset( new passage_pathing::Data( ) );
-	m_haveDedicatedProcessing = true;
-}
-
 void
 Result::Teardown( )
 {
-	m_data.reset( );
 	m_caveMap.clear( );
 }
 
-bool
-Result::ProcessGeneral( const AoC::DataPtr& data )
+void
+Result::ProcessOne( const std::string& data )
 {
-	return true;//drop data, we used all
+	auto splitPos = data.find( '-' );
+
+	m_caveMap[ data.substr( 0, splitPos ) ].push_back( data.substr( splitPos + 1 ) );
+	m_caveMap[ data.substr( splitPos + 1 ) ].push_back( data.substr( 0, splitPos ) );
 }
 
-bool
-Result::ProcessOne( const AoC::DataPtr& data )
+void
+Result::ProcessTwo( const std::string& data )
 {
-	auto dataPtr = static_cast< passage_pathing::Data* >( data.get( ) );
-	m_caveMap[ dataPtr->m_connection.first ].push_back( dataPtr->m_connection.second );
-	m_caveMap[ dataPtr->m_connection.second ].push_back( dataPtr->m_connection.first );
-	
-	return true;//drop data, we used all
-}
-
-bool
-Result::ProcessTwo( const AoC::DataPtr& data )
-{
-	return true;//drop data, we used all
 }
 
 bool
@@ -88,15 +67,9 @@ GetAllPaths(
 	const std::string&                            startingPoint );
 
 uint64_t
-Result::Finish( ) const
+Result::Finish( )
 {
-	const uint64_t result = IsPartOne( ) ? FinishPartOne( ) : FinishPartTwo( );
-	std::cout
-		<< "result = "
-		<< result
-		<< std::endl;
-
-	return result;
+	return IsPartOne( ) ? FinishPartOne( ) : FinishPartTwo( );
 }
 
 uint64_t

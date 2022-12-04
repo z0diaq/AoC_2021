@@ -1,0 +1,10 @@
+WIP
+- ...
+
+TODO
+- refactor days 1-11 to new data handling
+
+done:
+- get rid and protect against adding any input data
+- refactor: simplify top level project
+- refactor: simplify further data preparation

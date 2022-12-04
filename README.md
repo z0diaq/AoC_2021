@@ -8,3 +8,8 @@ more for practicing features from latest standards (i.e. modules from C++20, std
 Code comments and solutions improvements are welcomed!
 
 If You want to use locally please read template\readme_setup.txt
+
+personal goals (since day 12 puzzles):
+- source files not longer than 100 lines but easy to read
+- close to zero comments - code should describe itself
+- KISS - keep it stupid simple
