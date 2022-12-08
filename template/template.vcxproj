@@ -133,9 +133,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="data.ixx" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="part1.cpp" />
+    <ClCompile Include="part2.cpp" />
     <ClCompile Include="result.ixx" />
+    <ClCompile Include="shared.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="sample_input_a.txt" />
@@ -147,8 +149,8 @@
     <Text Include="sample_input_c_result_part1.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\generalSolution\generalSolution.vcxproj">
-      <Project>{fa8fc1ee-bfe7-4c26-accd-850ec1b40eb8}</Project>
+    <ProjectReference Include="..\AoC\AoC.vcxproj">
+      <Project>{51750796-b411-4ebb-8c85-8e90e7c471a8}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

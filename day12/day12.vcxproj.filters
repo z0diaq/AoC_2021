@@ -24,6 +24,15 @@
     <ClCompile Include="result.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="part1.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="part2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="shared.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="sample_input_a.txt">

@@ -30,11 +30,12 @@ AoC::Result::Execute( int argc, char* argv[ ] )
 bool
 AoC::Result::ProcessFileIfExists( const std::string& filename )
 {
-	TestData data( filename, m_dataTag );
+	TestData data;
+	m_dataLoadingSec = Measure( &TestData::Load, data, filename, m_dataTag );
 
 	if( false == data )
 	{
-		std::cout << std::endl << std::endl << "DEBUG: " << filename << " could not be processed" << std::endl;
+		std::cout << std::endl << "DEBUG: " << filename << " could not be processed" << std::endl;
 		return true;
 	}
 
@@ -42,34 +43,42 @@ AoC::Result::ProcessFileIfExists( const std::string& filename )
 
 	for( int partNo = 1; partNo <= 2; ++partNo )
 	{
-		if( FAILED == CheckResult(
-			InternalExecute( data.Data( ), partNo == 1 ),
-			partNo == 1 ? data.ExpectedResultPart1( ) : data.ExpectedResultPart2( ) ) )
-		{
+		PerformanceSummaryTrigger trigger( this );
+		if( FAILED == CheckResult( InternalExecute( data.Data( ), partNo == 1 ),
+								   partNo == 1 ? data.ExpectedResultPart1( ) : data.ExpectedResultPart2( ) ) )
 			return false;
-		}
 	}
 
 	return true;
 };
 
-uint64_t
+std::string
 AoC::Result::InternalExecute( const AoC::TestLines& lines, bool isPartOne )
 {
 	m_isPartOne = isPartOne;
 
-	std::cout << "\tPART " << ( isPartOne ? "1" : "2" ) << std::endl;
+	std::cout << "\tPART " << ( m_isPartOne ? "1" : "2" ) << std::endl;
 
-	uint64_t result{ 0u };
+	std::string result;
+
+	auto ProcessAllLines = [ this ]( const AoC::TestLines& lines ) -> void
+	{
+		for( const auto& line : lines )
+			m_isPartOne ? ProcessOne( line ) : ProcessTwo( line );
+	};
+
+	auto PrepareResult = [ this ](std::string& result ) -> void
+	{
+		result = m_isPartOne ? this->FinishPartOne( ) : this->FinishPartTwo( );
+	};
 
 	try
 	{
 		this->Init( );
 
-		for( auto line : lines )
-			isPartOne ? ProcessOne( line ) : ProcessTwo( line );
+		m_dataProcessingSec = Measure( ProcessAllLines, lines );
+		m_resultPrepareSec = Measure( PrepareResult, result );
 
-		result = this->Finish( );
 	}
 	catch( const std::exception& e )
 	{
@@ -88,21 +97,35 @@ AoC::Result::InternalExecute( const AoC::TestLines& lines, bool isPartOne )
 }
 
 int
-AoC::Result::CheckResult( const uint64_t computed, const uint64_t expected ) const
+AoC::Result::CheckResult( const std::string& computed, const std::string& expected ) const
 {
-	// ignore not ready solution results
-	if( computed == 0 )
-		return PASSED;
-
-	if( expected != computed )
+	if( false == computed.empty( ) )
 	{
-		std::cerr << " - ERROR: computed [" << computed << "], "
-			"expected [" << expected << "]" << std::endl;
+		if( expected != computed )
+		{
+			std::cerr << " - ERROR: computed [" << computed << "], "
+				"expected [" << expected << "]" << std::endl;
 
-		return FAILED;
+			return FAILED;
+		}
+
+		std::cout << " - OK";
 	}
-
-	std::cout << " - OK" << std::endl;
+	std::cout << std::endl;
 
 	return PASSED;
+}
+
+void
+AoC::Result::DumpPerformanceSummary( ) const
+{
+	const auto default_precision{ std::cout.precision( ) };
+	std::cout << std::setprecision( 3 ) << std::fixed;
+
+	std::cout << "\t\tperformance summary - load [" << m_dataLoadingSec << " s] >> "
+		"process: [" << m_dataProcessingSec << " s] >> "
+		"result: [" << m_resultPrepareSec << " s]"
+		<< std::endl;
+
+	std::cout << std::setprecision( default_precision ) << std::defaultfloat;
 }

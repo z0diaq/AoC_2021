@@ -1,5 +1,7 @@
 PLEASE READ TILL END (very important info at the end)
 
+don't put input publicly with solutions -> https://www.reddit.com/r/adventofcode/wiki/faqs/copyright/inputs/
+
 Required setup:
 - requires Visual Studio with C++20 support - works nicely with Community Edition
 - some projects rely on boost libraries so You need to setup them first
@@ -10,8 +12,9 @@ Required setup:
 
 To create new project
 - add empty C++ project to solution
-- in Windows explorer copy source (*.ixx, *.cpp) and test data (*.txt) from template dir to newly created project's dir - don't use copy in 'solution explorer' (in vS) it will create links only and this will make problems later
-- add reference to 'generalSolution' - internally this will add also project's dependency
+- in Windows explorer copy source (*.ixx, *.cpp) and test data (sample_input*.txt) from template dir to newly created project's dir - don't use copy in 'solution explorer' (in vS) it will create links only and this will make problems later
+ - input files can be copied to project dir or put to secret\dayXX directory (i.e. c:\code\AoC_2021\secret\day05) - program will check few locations when looking for test data
+- add reference to 'AoC' - internally this will add also project's dependency
 - if required add boost dependency - $(MY_LIBS)\boost_1_80_0
 - code solution :)
 - profit!

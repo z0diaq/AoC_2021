@@ -21,7 +21,7 @@ export namespace AoC
 	- parent dir \ parent dir \ tag \ secret
 	*/
 	bool
-	FindFileInPredefinedLocations( const std::string& filename, fs::path& foundPath, const std::string& dataTag )
+		FindFileInPredefinedLocations( const std::string& filename, fs::path& foundPath, const std::string& dataTag )
 	{
 		auto cwd = fs::current_path( );
 		foundPath = cwd / filename;
