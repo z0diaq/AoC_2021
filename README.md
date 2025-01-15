@@ -3,7 +3,7 @@ Advent of Code 2021
 
 my C++ solutions for puzzles from https://adventofcode.com/2021
 
-more for practicing features from latest standards (i.e. modules from C++20, std algorithms and boost) than providing fastest/simplest possible solutions - readability over performance
+more for practicing functional programming and features from latest standards (i.e. modules from C++20, std algorithms and boost) than providing fastest/simplest possible solutions - readability over performance
 
 Code comments and solutions improvements are welcomed!
 
