@@ -5,8 +5,6 @@
 #include <fstream>
 #include <string>
 
-#include <string.h> //strerror
-
 static const std::string FILENAME( "input.txt" );
 
 int main( )
@@ -22,7 +20,7 @@ int main( )
 
     if( false == file.is_open( ) )
     {
-        perror( "Could not open input file" );
+        std::cerr << "Could not open input file" << std::endl;
         
         return 1;
     }
