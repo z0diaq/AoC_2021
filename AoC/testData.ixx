@@ -19,9 +19,10 @@ export namespace AoC
 	public:
 		void Load( const std::string& filename, const std::string& dataTag );
 
-		operator bool( )const
+		operator bool( ) const
 		{
-			return false == m_data.empty( );
+			return false == m_data.empty( ) &&
+				m_data.front( ) != "UPDATE_ME_WITH_SAMPLE_DATA";
 		}
 
 		const TestLines& Data( ) const

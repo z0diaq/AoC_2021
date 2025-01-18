@@ -14,7 +14,7 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="data">
-      <UniqueIdentifier>{72428bc8-2af2-4c3e-a0bf-8b3bbf131a99}</UniqueIdentifier>
+      <UniqueIdentifier>{33db9db1-6d25-457c-8c28-36a3e61938e9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -42,6 +42,15 @@
       <Filter>data</Filter>
     </Text>
     <Text Include="sample_input_a_result_part2.txt">
+      <Filter>data</Filter>
+    </Text>
+    <Text Include="sample_input_b.txt">
+      <Filter>data</Filter>
+    </Text>
+    <Text Include="sample_input_b_result_part1.txt">
+      <Filter>data</Filter>
+    </Text>
+    <Text Include="sample_input_b_result_part2.txt">
       <Filter>data</Filter>
     </Text>
   </ItemGroup>

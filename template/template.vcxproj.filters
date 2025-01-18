@@ -35,6 +35,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <Text Include="readme_setup.txt" />
     <Text Include="sample_input_a.txt">
       <Filter>data</Filter>
     </Text>
@@ -53,6 +54,5 @@
     <Text Include="sample_input_c_result_part1.txt">
       <Filter>data</Filter>
     </Text>
-    <Text Include="readme_setup.txt" />
   </ItemGroup>
 </Project>

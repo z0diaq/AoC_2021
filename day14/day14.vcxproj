@@ -18,11 +18,31 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="part1.cpp" />
+    <ClCompile Include="part2.cpp" />
+    <ClCompile Include="result.ixx" />
+    <ClCompile Include="shared.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="sample_input_a.txt" />
+    <Text Include="sample_input_a_result_part1.txt" />
+    <Text Include="sample_input_a_result_part2.txt" />
+    <Text Include="sample_input_b.txt" />
+    <Text Include="sample_input_b_result_part1.txt" />
+    <Text Include="sample_input_b_result_part2.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AoC\AoC.vcxproj">
+      <Project>{51750796-b411-4ebb-8c85-8e90e7c471a8}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
-    <VCProjectVersion>16.0</VCProjectVersion>
+    <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{6156a47f-7e7a-4152-a928-cd6cfe0db26d}</ProjectGuid>
-    <RootNamespace>template</RootNamespace>
+    <ProjectGuid>{6b9fb312-7d62-45fe-b721-ab6a32cc90f7}</ProjectGuid>
+    <RootNamespace>day14</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -70,10 +90,10 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(MY_LIBS)\boost_1_87_0;$(IncludePath)</IncludePath>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(MY_LIBS)\boost_1_87_0;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -111,7 +131,6 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <ShowIncludes>false</ShowIncludes>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -126,7 +145,6 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <ShowIncludes>false</ShowIncludes>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -136,27 +154,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="part1.cpp" />
-    <ClCompile Include="part2.cpp" />
-    <ClCompile Include="result.ixx" />
-    <ClCompile Include="shared.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="readme_setup.txt" />
-    <Text Include="sample_input_a.txt" />
-    <Text Include="sample_input_a_result_part1.txt" />
-    <Text Include="sample_input_b.txt" />
-    <Text Include="sample_input_b_result_part1.txt" />
-    <Text Include="sample_input_c.txt" />
-    <Text Include="sample_input_c_result_part1.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\AoC\AoC.vcxproj">
-      <Project>{51750796-b411-4ebb-8c85-8e90e7c471a8}</Project>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
