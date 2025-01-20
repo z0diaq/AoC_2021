@@ -90,13 +90,37 @@ Result::FinishPartTwo()
 		polymer.swap( newPolymer );
 	}
 
-	auto result = std::accumulate(
-		polymer.begin( ),
-		polymer.end( ),
-		std::pair<std::uint64_t, std::uint64_t>{ static_cast< std::uint64_t >( -1 ), 0 },
-		[ ]( const std::pair<std::uint64_t, std::uint64_t>& _minAndMax, const auto& _value ) {
-			return std::pair<std::uint64_t, std::uint64_t>{std::min( _minAndMax.first, _value.second ), std::max( _minAndMax.second, _value.second )};
-		} );
+	auto Position = [ ]( char _c ) -> size_t
+		{ return _c - 'A'; };
 
-	return std::to_string( result.second - result.first );
+	std::array<std::uint64_t, 'Z' - 'A'> occurrances{};
+	for( const auto& item : polymer )
+	{
+		occurrances[ Position(item.first[ 0 ])] += item.second;
+		occurrances[ Position(item.first[ 1 ])] += item.second;
+	}
+
+	++occurrances[ Position(*m_template.begin( ))];
+	++occurrances[ Position(*m_template.rbegin( ))];
+
+
+	for( std::uint64_t& o : occurrances )
+		o /= 2;
+
+	// we might not get all chars used so can't go for std::minmax_element
+	auto most_occuring = 0ULL,
+		least_occuring = static_cast< std::uint64_t >( -1 );
+	for( std::uint64_t value : occurrances )
+	{
+		if( 0 == value )
+			continue;
+		most_occuring = std::max( most_occuring, value );
+		least_occuring = std::min( least_occuring, value );
+	}
+
+	std::cout << "most  occurring: " << most_occuring << std::endl;
+	std::cout << "least occurring: " << least_occuring << std::endl;
+
+	// 4105531961858 is too low
+	return std::to_string( most_occuring - least_occuring );
 }
