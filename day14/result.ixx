@@ -20,7 +20,6 @@ export namespace extended_polymerization
 		Result();
 
 	protected:
-		virtual void Init() override;
 
 		virtual void ProcessOne( const std::string& data ) override;
 		virtual std::string FinishPartOne( ) override;

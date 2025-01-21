@@ -1,24 +1,11 @@
 import extended_polymerization;
 
-//leave what is needed
-#include <iostream>
 #include <string>
 #include <algorithm>
-#include <numeric>
-#include <stdexcept>
-
-//containers
-#include <vector>
+#include <iterator>
 #include <map>
-#include <set>
-#include <deque>
 #include <array>
 
-//boost
-#include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string/classification.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/algorithm/string/replace.hpp>
 
 using namespace extended_polymerization;
 
@@ -103,7 +90,6 @@ Result::FinishPartTwo()
 	++occurrances[ Position(*m_template.begin( ))];
 	++occurrances[ Position(*m_template.rbegin( ))];
 
-
 	for( std::uint64_t& o : occurrances )
 		o /= 2;
 
@@ -112,15 +98,11 @@ Result::FinishPartTwo()
 		least_occuring = static_cast< std::uint64_t >( -1 );
 	for( std::uint64_t value : occurrances )
 	{
-		if( 0 == value )
+		if( !value )
 			continue;
 		most_occuring = std::max( most_occuring, value );
 		least_occuring = std::min( least_occuring, value );
 	}
 
-	std::cout << "most  occurring: " << most_occuring << std::endl;
-	std::cout << "least occurring: " << least_occuring << std::endl;
-
-	// 4105531961858 is too low
 	return std::to_string( most_occuring - least_occuring );
 }
