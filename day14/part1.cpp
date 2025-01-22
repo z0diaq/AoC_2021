@@ -9,7 +9,6 @@ import extended_polymerization;
 #include <vector>
 #include <array>
 
-
 using namespace extended_polymerization;
 
 void
@@ -18,8 +17,7 @@ Result::ProcessOne( const std::string& data )
 	if( m_template.empty( ) )
 		std::copy( data.begin( ), data.end( ), std::back_inserter( m_template ) );
 	else if( data.length( ) == 7 )
-		m_pairInsertionRules[ data[ 0 ] ][ data[ 1 ] ] = data[ 6 ];
-
+		m_pairInsertionRules[ { data[ 0 ], data[ 1 ] } ] = data[ 6 ];
 }
 
 CharList ApplyRules( CharList _polymer, const PairInsertionRulesMap& _rules );
@@ -60,7 +58,9 @@ CharList ApplyRules( CharList _polymer, const PairInsertionRulesMap& _rules )
 
 	while( itCurrent != result.end( ) )
 	{
-		result.insert( itCurrent, _rules.at( *itPrevious ).at( *itCurrent ) );
+		auto itRuleFindResult = _rules.find( { *itPrevious, *itCurrent } );
+		if(itRuleFindResult != _rules.end())
+			result.insert( itCurrent, itRuleFindResult->second );
 		itPrevious = itCurrent++;
 	}
 

@@ -3,6 +3,7 @@ module;
 #include <string>
 #include <list>
 #include <map>
+#include <array>
 
 export module extended_polymerization;
 
@@ -10,8 +11,9 @@ import AoC;
 
 export namespace extended_polymerization
 {
-	using CharList = std::list<char>;
-	using PairInsertionRulesMap = std::map<char, std::map<char, char> >;
+	using CharList = std::list<char>;//for simpler part 1 solution
+	using CharPair = std::array<char, 2>;
+	using PairInsertionRulesMap = std::map<CharPair, char>;
 
 	class Result : public AoC::Result
 	{

@@ -15,10 +15,9 @@ Result::ProcessTwo(const std::string& data)
 	if( m_template.empty( ) )
 		std::copy( data.begin( ), data.end( ), std::back_inserter( m_template ) );
 	else if( data.length( ) == 7 )
-		m_pairInsertionRules[ data[ 0 ] ][ data[ 1 ] ] = data[ 6 ];
+		m_pairInsertionRules[ { data[ 0 ], data[ 1 ] } ] = data[ 6 ];
 }
 
-using CharPair = std::array<char, 2>;
 using PolymerPairMap = std::map<CharPair, std::uint64_t>;
 
 CharList ApplyRules( CharList _polymer, const PairInsertionRulesMap& _rules );
@@ -52,24 +51,18 @@ Result::FinishPartTwo()
 			const auto& pair = it->first;
 			const std::uint64_t& count = it->second;
 
-			bool foundMatchingRule{ false };
-			const auto& itFirstCharResult{ m_pairInsertionRules.find( pair[ 0 ] ) };
-			if( itFirstCharResult != m_pairInsertionRules.end( ) )
+			const auto& itCharResult{ m_pairInsertionRules.find( pair ) };
+			if( itCharResult != m_pairInsertionRules.end( ) )
 			{
-				const auto& itSecondCharResult{ itFirstCharResult->second.find( pair[ 1 ] ) };
-				if( itSecondCharResult != itFirstCharResult->second.end( ) )
-				{
-					const char charToInsert{ itSecondCharResult->second };
-					auto firstInsertResult = newPolymer.insert( { { pair[ 0 ], charToInsert }, count } );
-					if( false == firstInsertResult.second )
-						firstInsertResult.first->second += count;
-					auto secondInsertResult = newPolymer.insert( { { charToInsert, pair[ 1 ]}, count } );
-					if( false == secondInsertResult.second )
-						secondInsertResult.first->second += count;
-					foundMatchingRule = true;
-				}
+				const char charToInsert{ itCharResult->second };
+				auto firstInsertResult = newPolymer.insert( { { pair[ 0 ], charToInsert }, count } );
+				if( false == firstInsertResult.second )
+					firstInsertResult.first->second += count;
+				auto secondInsertResult = newPolymer.insert( { { charToInsert, pair[ 1 ]}, count } );
+				if( false == secondInsertResult.second )
+					secondInsertResult.first->second += count;
 			}
-			if( false == foundMatchingRule )
+			else
 			{
 				newPolymer.insert( *it );
 			}
