@@ -35,5 +35,5 @@ Result::Init()
 void
 Result::Teardown()
 {
-
+	m_map.clear( );
 }
