@@ -37,56 +37,99 @@ Result::FinishPartOne( )
 	return std::to_string( ShortestPathLength( m_map ) );
 }
 
-struct PositionWithWeight
+
+struct Position
 {
-	unsigned int m_x, m_y, m_weight;
+	int m_row;
+	int m_col;
 };
 
-bool operator<( const PositionWithWeight& _lhs, const PositionWithWeight& _rhs )
+bool operator==( const Position& _lhs, const Position& _rhs )
 {
-	return _lhs.m_weight < _rhs.m_weight;
+	return _lhs.m_row == _rhs.m_row && _lhs.m_col == _rhs.m_col;
+}
+
+struct Node {
+	Position m_id;
+	unsigned int m_heuristic;
+	unsigned int m_cost;
+};
+
+bool operator<( const Node& a, const Node& b ) {
+	return a.m_cost + a.m_heuristic > b.m_cost + b.m_heuristic;
 }
 
 
-bool SamePosition( const PositionWithWeight& _lhs, const PositionWithWeight& _rhs );
 
-std::size_t ShortestPathLength( const std::deque<std::string>& _map )
+std::size_t LengthOfShortestPath( const std::deque<std::string>& _map )
 {
-	// direct implementation of https://en.wikipedia.org/wiki/A*_search_algorithm
+	const Position goal{ _map.size( ) - 1, _map[ 0 ].length( ) };
+	const size_t width{ _map.front( ).length( ) };
+	const size_t height{ _map.size( ) };
 
-	const std::uint32_t width{ static_cast< std::uint32_t >( _map.front( ).length( ) ) };
-	const std::uint32_t height{ static_cast< std::uint32_t >( _map.size( ) ) };
+	// Heuristic function (Manhattan distance)
+	auto heuristic = [&]( const Position& _lhs, const Position& _rhs ) -> unsigned int {
+		return static_cast< unsigned int >( abs( _rhs.m_row - _lhs.m_row ) + std::abs( _rhs.m_col - _lhs.m_col ) );
+		};
 
-	std::priority_queue< PositionWithWeight> openSet;
-	openSet.push( PositionWithWeight{ 0, 0, static_cast< unsigned int >( _map[ 0 ][ 0 ] ) } );
+	auto constructNode = [&heuristic, &goal]( const Position& _where ) -> Node
+		{
+			return Node{ _where, heuristic( _where, goal ) };
+		};
 
-	std::map<PositionWithWeight, PositionWithWeight> cameFrom;
+	auto getNeighbours = [&]( const Position& _position ) -> std::vector<Node>
+		{
+			std::vector<Node> result;
+			result.reserve( 4 );
 
-	using WeightsRow = std::vector<std::uint64_t>;
-	using WeightsMap = std::vector<WeightsRow>;
+			if( _position.m_row > 0 )
+				result.push_back( constructNode( { _position.m_row - 1, _position.m_col } ) );
+			if( _position.m_col > 0 )
+				result.push_back( constructNode( { _position.m_row, _position.m_col - 1 } ) );
+			if( _position.m_col + 1 < width )
+				result.push_back( constructNode( { _position.m_row, _position.m_col + 1 } ) );
+			if( _position.m_row + 1 < height )
+				result.push_back( constructNode( { _position.m_row + 1, _position.m_col } ) );
 
-	WeightsRow rowInit( width, std::numeric_limits<std::uint64_t>::max( ) );
-	WeightsMap gScore( height, rowInit );
+			return result;
+		};
 
-	WeightsMap fScore = gScore;
-	fScore[ 0 ][ 0 ] = 1;// don't use heuristics since graph is weighted
+	std::priority_queue<Node> openList, closedList;
+	openList.push( constructNode( { 0, 0 } ) );
 
-	const PositionWithWeight destination{ height - 1, width - 1, 0 };
+	//open_list[ start_id ] = { start_id, heuristic( start_id, goal_id ), 0 };
 
-	while( false == openSet.empty( ) )
-	{
-		auto current = openSet.top( );
-		openSet.pop( );
+	while( !openList.empty( ) ) {
 
-		if( SamePosition( current, destination ) )
-			return current.m_weight;
+		auto currentNode = openList.top( );
+		openList.pop( );
+
+		if( currentNode.m_id == goal ) {
+			return currentNode.m_cost;
+		}
+
+		closedList.push( currentNode );
+		//closed_list[ current_node.first ] = current_node.second;
+
+		for( const auto& neighbor : graph[ current_node.first ] ) {
+			if( closed_list.find( neighbor ) != closed_list.end( ) ) {
+				continue;
+			}
+
+			double new_cost = current_node.second.cost + neighbor;
+			auto it = open_list.find( neighbor );
+			if( it == open_list.end( ) || new_cost < it->second.cost ) {
+				open_list[ neighbor ] = { neighbor, heuristic( neighbor, goal ), new_cost };
+			}
+		}
 	}
 
-	return 0;
+	return std::numeric_limits<double>::max( ); // No path found
 }
 
-bool SamePosition( const PositionWithWeight& _lhs, const PositionWithWeight& _rhs )
 {
-	return _lhs.m_x == _rhs.m_x && _lhs.m_y == _rhs.m_y;
+
+
+	return 0;
 }
 
