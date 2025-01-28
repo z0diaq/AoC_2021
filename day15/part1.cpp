@@ -5,10 +5,12 @@ import chitons;
 #include <string>
 #include <algorithm>
 #include <stdexcept>
+#include <limits>
 
 //containers
 #include <vector>
 #include <map>
+#include <unordered_map>
 #include <set>
 #include <deque>
 #include <array>
@@ -29,52 +31,62 @@ Result::ProcessOne( const std::string& data )
 }
 
 // start and end are known
-std::size_t ShortestPathLength( const std::deque<std::string>& _map );
+int ShortestDistance( const std::deque<std::string>& _graph );
 
 std::string
 Result::FinishPartOne( )
 {
-	return std::to_string( ShortestPathLength( m_map ) );
+	return std::to_string( ShortestDistance( m_map ) );
 }
-
 
 struct Position
 {
-	int m_row;
-	int m_col;
+	int m_col{};
+	int m_row{};
 };
 
-bool operator==( const Position& _lhs, const Position& _rhs )
+bool operator<( const Position& _lhs, const Position& _rhs )
 {
-	return _lhs.m_row == _rhs.m_row && _lhs.m_col == _rhs.m_col;
+	if( _lhs.m_row != _rhs.m_row )
+		return _lhs.m_row < _rhs.m_row;
+	return _lhs.m_col < _rhs.m_col;
 }
 
 struct Node {
 	Position m_id;
-	unsigned int m_heuristic;
-	unsigned int m_cost;
+	int m_heuristic{};
+	int m_cost{};
 };
 
 bool operator<( const Node& a, const Node& b ) {
 	return a.m_cost + a.m_heuristic > b.m_cost + b.m_heuristic;
 }
 
-
-
-std::size_t LengthOfShortestPath( const std::deque<std::string>& _map )
+bool operator==( const Position& _lhs, const Position& _rhs )
 {
-	const Position goal{ _map.size( ) - 1, _map[ 0 ].length( ) };
-	const size_t width{ _map.front( ).length( ) };
-	const size_t height{ _map.size( ) };
+	return _lhs.m_col == _rhs.m_col && _lhs.m_row == _rhs.m_row;
+}
+
+int ShortestDistance( const std::deque<std::string>& _graph )
+{
+	const Position start{ 0, 0 };
+	const int width{ static_cast<int>( _graph.front( ).length( ) ) };
+	const int height{ static_cast<int>( _graph.size( ) ) };
+	const Position destination{ width - 1, height - 1 };
 
 	// Heuristic function (Manhattan distance)
-	auto heuristic = [&]( const Position& _lhs, const Position& _rhs ) -> unsigned int {
-		return static_cast< unsigned int >( abs( _rhs.m_row - _lhs.m_row ) + std::abs( _rhs.m_col - _lhs.m_col ) );
+	auto heuristic = [&]( const Position& _id1, const Position& _id2 ) -> int {
+		return abs( _id2.m_col - _id1.m_col ) + abs( _id2.m_row - _id1.m_row );
 		};
 
-	auto constructNode = [&heuristic, &goal]( const Position& _where ) -> Node
+	auto getCost = [&]( const Position& _position ) -> int
 		{
-			return Node{ _where, heuristic( _where, goal ) };
+			return _graph[ _position.m_row ][ _position.m_col ] - '0'; // convert from char to int range
+		};
+
+	auto constructNode = [&]( const Position& _position ) -> Node
+		{
+			return Node{ _position, heuristic( _position, destination ), getCost( _position ) };
 		};
 
 	auto getNeighbours = [&]( const Position& _position ) -> std::vector<Node>
@@ -83,53 +95,41 @@ std::size_t LengthOfShortestPath( const std::deque<std::string>& _map )
 			result.reserve( 4 );
 
 			if( _position.m_row > 0 )
-				result.push_back( constructNode( { _position.m_row - 1, _position.m_col } ) );
+				result.emplace_back( constructNode( { _position.m_col, _position.m_row - 1 } ) );
 			if( _position.m_col > 0 )
-				result.push_back( constructNode( { _position.m_row, _position.m_col - 1 } ) );
-			if( _position.m_col + 1 < width )
-				result.push_back( constructNode( { _position.m_row, _position.m_col + 1 } ) );
-			if( _position.m_row + 1 < height )
-				result.push_back( constructNode( { _position.m_row + 1, _position.m_col } ) );
+				result.emplace_back( constructNode( { _position.m_col - 1, _position.m_row } ) );
+			if( _position.m_row < ( height - 1 ) )
+				result.emplace_back( constructNode( { _position.m_col, _position.m_row + 1 } ) );
+			if( _position.m_col < ( width - 1 ) )
+				result.emplace_back( constructNode( { _position.m_col + 1, _position.m_row } ) );
 
 			return result;
 		};
 
-	std::priority_queue<Node> openList, closedList;
-	openList.push( constructNode( { 0, 0 } ) );
+	std::priority_queue<Node> openList;
+	std::set<Position> closedList;
 
-	//open_list[ start_id ] = { start_id, heuristic( start_id, goal_id ), 0 };
+	//openList[ start ] = { start, heuristic( start, destination ), 0 };
+	openList.push( { start, heuristic( start, destination ), 0 } ); // "don't count the risk level of your starting position unless you enter it"
 
 	while( !openList.empty( ) ) {
 
 		auto currentNode = openList.top( );
 		openList.pop( );
 
-		if( currentNode.m_id == goal ) {
+		if( currentNode.m_id == destination )
 			return currentNode.m_cost;
-		}
 
-		closedList.push( currentNode );
-		//closed_list[ current_node.first ] = current_node.second;
+		closedList.insert( currentNode.m_id );
 
-		for( const auto& neighbor : graph[ current_node.first ] ) {
-			if( closed_list.find( neighbor ) != closed_list.end( ) ) {
+		for( const auto& neighbor : getNeighbours( currentNode.m_id ) ) {
+			if( closedList.contains( neighbor.m_id ) ) {
 				continue;
 			}
 
-			double new_cost = current_node.second.cost + neighbor;
-			auto it = open_list.find( neighbor );
-			if( it == open_list.end( ) || new_cost < it->second.cost ) {
-				open_list[ neighbor ] = { neighbor, heuristic( neighbor, goal ), new_cost };
-			}
+			openList.push( { neighbor.m_id, neighbor.m_heuristic, currentNode.m_cost + neighbor.m_cost } );
 		}
 	}
 
-	return std::numeric_limits<double>::max( ); // No path found
+	return std::numeric_limits<int>::max( ); // No path found
 }
-
-{
-
-
-	return 0;
-}
-
