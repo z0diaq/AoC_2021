@@ -19,12 +19,12 @@ AoC::Result::Execute( int argc, char* argv[ ] )
 		std::cout << "DEBUG: tag: [" << m_dataTag << "]" << std::endl;
 	}
 
-	// process all known files - abort on first computation failure
-	return
-		ProcessFileIfExists( FILENAME_TEST_A ) &&
-		ProcessFileIfExists( FILENAME_TEST_B ) &&
-		ProcessFileIfExists( FILENAME_TEST_C ) &&
-		ProcessFileIfExists( FILENAME );
+	bool result{ ProcessFileIfExists( FILENAME_TEST_A ) };
+	result &= ProcessFileIfExists( FILENAME_TEST_B );
+	result &= ProcessFileIfExists( FILENAME_TEST_C );
+	result &= ProcessFileIfExists( FILENAME );
+
+	return result;
 }
 
 bool
