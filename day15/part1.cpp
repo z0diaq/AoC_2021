@@ -1,26 +1,12 @@
 import chitons;
 
-//leave what is needed
-#include <iostream>
 #include <string>
-#include <algorithm>
-#include <stdexcept>
 #include <limits>
 
-//containers
-#include <vector>
 #include <map>
-#include <unordered_map>
 #include <set>
 #include <deque>
-#include <array>
 #include <queue>
-
-//boost
-#include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string/classification.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/algorithm/string/replace.hpp>
 
 using namespace chitons;
 
@@ -75,45 +61,45 @@ int ShortestDistance( const std::deque<std::string>& _graph )
 	const Position destination{ width - 1, height - 1 };
 
 	// Heuristic function (Manhattan distance)
-	auto heuristic = [&]( const Position& _id1, const Position& _id2 ) -> int {
+	auto heuristic = [&]( const Position& _id1, const Position& _id2 ) -> int
+	{
 		return abs( _id2.m_col - _id1.m_col ) + abs( _id2.m_row - _id1.m_row );
-		};
+	};
 
 	auto getCost = [&]( const Position& _position ) -> int
-		{
-			return _graph[ _position.m_row ][ _position.m_col ] - '0'; // convert from char to int range
-		};
+	{
+		return _graph[ _position.m_row ][ _position.m_col ] - '0'; // convert from char to int range
+	};
 
 	auto constructNode = [&]( const Position& _position ) -> Node
-		{
-			return Node{ _position, heuristic( _position, destination ), getCost( _position ) };
-		};
+	{
+		return Node{ _position, heuristic( _position, destination ), getCost( _position ) };
+	};
 
 	auto getNeighbours = [&]( const Position& _position ) -> std::vector<Node>
-		{
-			std::vector<Node> result;
-			result.reserve( 4 );
+	{
+		std::vector<Node> result;
+		result.reserve( 4 );
 
-			if( _position.m_row > 0 )
-				result.emplace_back( constructNode( { _position.m_col, _position.m_row - 1 } ) );
-			if( _position.m_col > 0 )
-				result.emplace_back( constructNode( { _position.m_col - 1, _position.m_row } ) );
-			if( _position.m_row < ( height - 1 ) )
-				result.emplace_back( constructNode( { _position.m_col, _position.m_row + 1 } ) );
-			if( _position.m_col < ( width - 1 ) )
-				result.emplace_back( constructNode( { _position.m_col + 1, _position.m_row } ) );
+		if( _position.m_row > 0 )
+			result.emplace_back( constructNode( { _position.m_col, _position.m_row - 1 } ) );
+		if( _position.m_col > 0 )
+			result.emplace_back( constructNode( { _position.m_col - 1, _position.m_row } ) );
+		if( _position.m_row < ( height - 1 ) )
+			result.emplace_back( constructNode( { _position.m_col, _position.m_row + 1 } ) );
+		if( _position.m_col < ( width - 1 ) )
+			result.emplace_back( constructNode( { _position.m_col + 1, _position.m_row } ) );
 
-			return result;
-		};
+		return result;
+	};
 
 	std::priority_queue<Node> openList;
 	std::set<Position> closedList;
 
-	//openList[ start ] = { start, heuristic( start, destination ), 0 };
 	openList.push( { start, heuristic( start, destination ), 0 } ); // "don't count the risk level of your starting position unless you enter it"
 
-	while( !openList.empty( ) ) {
-
+	while( !openList.empty( ) )
+	{
 		auto currentNode = openList.top( );
 		openList.pop( );
 
@@ -122,10 +108,10 @@ int ShortestDistance( const std::deque<std::string>& _graph )
 
 		closedList.insert( currentNode.m_id );
 
-		for( const auto& neighbor : getNeighbours( currentNode.m_id ) ) {
-			if( closedList.contains( neighbor.m_id ) ) {
+		for( const auto& neighbor : getNeighbours( currentNode.m_id ) )
+		{
+			if( closedList.contains( neighbor.m_id ) )
 				continue;
-			}
 
 			openList.push( { neighbor.m_id, neighbor.m_heuristic, currentNode.m_cost + neighbor.m_cost } );
 		}

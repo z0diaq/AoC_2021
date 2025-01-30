@@ -1,33 +1,47 @@
 import chitons;
 
-//leave what is needed
-#include <iostream>
 #include <string>
-#include <algorithm>
-#include <stdexcept>
-
-//containers
-#include <vector>
-#include <map>
-#include <set>
-#include <deque>
-#include <array>
-
-//boost
-#include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string/classification.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/algorithm/string/replace.hpp>
 
 using namespace chitons;
 
 void
 Result::ProcessTwo(const std::string& data)
 {
+	ProcessOne( data );
 }
+
+std::string IncrementString( std::string _row, char _increase );
 
 std::string
 Result::FinishPartTwo()
 {
-	return std::to_string(0);
+	auto newMap = m_map;
+
+	for( size_t row = 0; row != m_map.size( ); ++row )
+	{
+		std::string& newRow = newMap[ row ];
+		for( char repeat = 1; repeat < 5; ++repeat )
+			newRow.append( IncrementString( m_map[ row ], repeat ) );
+	}
+
+	for( char repeat = 1; repeat < 5; ++repeat )
+		for( size_t row = 0; row != m_map.size( ); ++row )
+		{
+			newMap.push_back( IncrementString( newMap[ row ], repeat ) );
+		}
+
+	m_map.swap( newMap );
+
+	return FinishPartOne( );
+}
+
+std::string IncrementString( std::string _row, char _increase )
+{
+	for( char& c : _row )
+	{
+		c += _increase;
+		if( c > '9' )
+			c = '0' + ( c - '9' );
+	}
+	return _row;
 }
