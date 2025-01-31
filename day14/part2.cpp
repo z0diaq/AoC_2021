@@ -6,6 +6,7 @@ import extended_polymerization;
 #include <map>
 #include <array>
 
+#include <iostream>
 
 using namespace extended_polymerization;
 
@@ -15,29 +16,35 @@ Result::ProcessTwo(const std::string& data)
 	if( m_template.empty( ) )
 		std::copy( data.begin( ), data.end( ), std::back_inserter( m_template ) );
 	else if( data.length( ) == 7 )
+	{
+		std::cout << "processed " << data << std::endl;
 		m_pairInsertionRules[ { data[ 0 ], data[ 1 ] } ] = data[ 6 ];
+	}
 }
 
 using PolymerPairMap = std::map<CharPair, std::uint64_t>;
 
-CharList ApplyRules( CharList _polymer, const PairInsertionRulesMap& _rules );
-
-void PushNewPairOrIncrementExisting( PolymerPairMap& _map, const CharPair& _pair )
+template<typename ItemType>
+void PushNewPairOrIncrementExisting( std::map<ItemType, std::uint64_t>& _map, const ItemType& _item, const std::uint64_t _count = 1 )
 {
-	auto insertResult = _map.insert( { _pair, 1 } );
+	auto insertResult = _map.insert( { _item, _count } );
 	if( false == insertResult.second )
-		++insertResult.first->second;
+		insertResult.first->second += _count;
 }
 
 std::string
 Result::FinishPartTwo()
 {
+	std::map<char, std::uint64_t> occurrances{};
+
 	PolymerPairMap polymer;
 	{
 		auto prevIt = m_template.begin( );
+		++occurrances[ *prevIt ];
 		auto currentIt = ++prevIt;
 		while( currentIt != m_template.end( ) )
 		{
+			++occurrances[ *currentIt ];
 			PushNewPairOrIncrementExisting( polymer, { *prevIt, *currentIt } );
 			prevIt = currentIt++;
 		}
@@ -48,54 +55,33 @@ Result::FinishPartTwo()
 		PolymerPairMap newPolymer;
 		for( auto it = polymer.begin( ); it != polymer.end( ); ++it )
 		{
-			const auto& pair = it->first;
-			const std::uint64_t& count = it->second;
+			const auto& pair{ it->first };
+			const std::uint64_t& count{ it->second };
 
 			const auto& itCharResult{ m_pairInsertionRules.find( pair ) };
 			if( itCharResult != m_pairInsertionRules.end( ) )
 			{
 				const char charToInsert{ itCharResult->second };
-				auto firstInsertResult = newPolymer.insert( { { pair[ 0 ], charToInsert }, count } );
-				if( false == firstInsertResult.second )
-					firstInsertResult.first->second += count;
-				auto secondInsertResult = newPolymer.insert( { { charToInsert, pair[ 1 ]}, count } );
-				if( false == secondInsertResult.second )
-					secondInsertResult.first->second += count;
+
+				PushNewPairOrIncrementExisting( newPolymer, { pair[ 0 ], charToInsert }, count );
+				PushNewPairOrIncrementExisting( newPolymer, { charToInsert, pair[ 1 ] }, count );
+				occurrances[ charToInsert ] += count;
 			}
 			else
 			{
-				newPolymer.insert( *it );
+				PushNewPairOrIncrementExisting( newPolymer, pair, count );
 			}
 		}
 		polymer.swap( newPolymer );
 	}
 
-	auto Position = [ ]( char _c ) -> size_t
-		{ return _c - 'A'; };
-
-	std::array<std::uint64_t, 'Z' - 'A'> occurrances{};
-	for( const auto& item : polymer )
+	const auto minmax = std::minmax_element(
+		std::begin( occurrances ),
+		std::end( occurrances ),
+		[ ]( const auto& _lhs, const auto& _rhs ) -> bool
 	{
-		occurrances[ Position(item.first[ 0 ])] += item.second;
-		occurrances[ Position(item.first[ 1 ])] += item.second;
-	}
+		return _lhs.second < _rhs.second;
+	} );
 
-	++occurrances[ Position(*m_template.begin( ))];
-	++occurrances[ Position(*m_template.rbegin( ))];
-
-	for( std::uint64_t& o : occurrances )
-		o /= 2;
-
-	// we might not get all chars used so can't go for std::minmax_element
-	auto most_occuring = 0ULL,
-		least_occuring = static_cast< std::uint64_t >( -1 );
-	for( std::uint64_t value : occurrances )
-	{
-		if( !value )
-			continue;
-		most_occuring = std::max( most_occuring, value );
-		least_occuring = std::min( least_occuring, value );
-	}
-
-	return std::to_string( most_occuring - least_occuring );
+	return std::to_string( minmax.second->second - minmax.first->second );
 }

@@ -30,7 +30,7 @@ Result::FinishPartOne( )
 	for( int iterations = 0; iterations < 10; ++iterations )
 		polymer = ApplyRules( polymer, m_pairInsertionRules );
 
-	std::array<size_t, 'Z' - 'A'> occurrences{};
+	std::array<size_t, 'Z' - 'A' + 1> occurrences{};
 
 	auto countOccurance = [&occurrences]( const char _value ) { ++occurrences[ _value - 'A' ]; };
 

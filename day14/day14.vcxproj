@@ -29,9 +29,6 @@
     <Text Include="sample_input_a.txt" />
     <Text Include="sample_input_a_result_part1.txt" />
     <Text Include="sample_input_a_result_part2.txt" />
-    <Text Include="sample_input_b.txt" />
-    <Text Include="sample_input_b_result_part1.txt" />
-    <Text Include="sample_input_b_result_part2.txt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AoC\AoC.vcxproj">

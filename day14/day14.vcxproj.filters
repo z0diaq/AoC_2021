@@ -44,14 +44,5 @@
     <Text Include="sample_input_a_result_part2.txt">
       <Filter>data</Filter>
     </Text>
-    <Text Include="sample_input_b.txt">
-      <Filter>data</Filter>
-    </Text>
-    <Text Include="sample_input_b_result_part1.txt">
-      <Filter>data</Filter>
-    </Text>
-    <Text Include="sample_input_b_result_part2.txt">
-      <Filter>data</Filter>
-    </Text>
   </ItemGroup>
 </Project>
