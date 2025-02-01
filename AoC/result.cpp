@@ -2,13 +2,12 @@ import AoC;
 
 #include <iostream>
 #include <filesystem>
+#include <vector>
 
 namespace fs = std::filesystem;
 
 static const std::string FILENAME( "input.txt" );
-static const std::string FILENAME_TEST_A( "sample_input_a.txt" );
-static const std::string FILENAME_TEST_B( "sample_input_b.txt" );
-static const std::string FILENAME_TEST_C( "sample_input_c.txt" );
+static const std::string FILENAME_TEST_TEMPLATE( "sample_input_REV.txt" );
 
 bool
 AoC::Result::Execute( int argc, char* argv[ ] )
@@ -19,15 +18,31 @@ AoC::Result::Execute( int argc, char* argv[ ] )
 		std::cout << "DEBUG: tag: [" << m_dataTag << "]" << std::endl;
 	}
 
-	bool result{ ProcessFileIfExists( FILENAME_TEST_A ) };
-	result &= ProcessFileIfExists( FILENAME_TEST_B );
-	result &= ProcessFileIfExists( FILENAME_TEST_C );
-	result &= ProcessFileIfExists( FILENAME );
+	std::vector< FileProcessingResult> results{};
 
-	return result;
+	results.push_back( ProcessFileIfExists( FILENAME ) );
+
+	auto pos = FILENAME_TEST_TEMPLATE.find( "REV" );
+	if( pos != std::string::npos )
+	{
+		for( char c = 'a'; c != 'z'; ++c )
+		{
+			std::string filenameTest{ FILENAME_TEST_TEMPLATE };
+			filenameTest.replace( pos, 3, std::string{ c } );
+			results.push_back( ProcessFileIfExists( filenameTest ) );
+			if( results.back( ) == FileProcessingResult::InputFileNotFound )
+				break;
+		}
+	}
+
+	// are there any failed results ?
+	return std::find_if( results.begin( ), results.end( ), [ ]( FileProcessingResult currentResult ) -> bool
+		{
+			return currentResult == FileProcessingResult::ResultNotMatching;
+		} ) == results.end();
 }
 
-bool
+AoC::FileProcessingResult
 AoC::Result::ProcessFileIfExists( const std::string& filename )
 {
 	TestData data;
@@ -36,7 +51,7 @@ AoC::Result::ProcessFileIfExists( const std::string& filename )
 	if( false == data )
 	{
 		std::cout << std::endl << "DEBUG: " << filename << " could not be processed" << std::endl;
-		return true;
+		return FileProcessingResult::InputFileNotFound;
 	}
 
 	std::cout << std::endl << "INFO: processing [" << filename << "]..." << std::endl;
@@ -46,10 +61,10 @@ AoC::Result::ProcessFileIfExists( const std::string& filename )
 		PerformanceSummaryTrigger trigger( this );
 		if( FAILED == CheckResult( InternalExecute( data.Data( ), partNo == 1 ),
 								   partNo == 1 ? data.ExpectedResultPart1( ) : data.ExpectedResultPart2( ) ) )
-			return false;
+			return FileProcessingResult::ResultNotMatching;
 	}
 
-	return true;
+	return FileProcessingResult::ResultMatching;
 };
 
 std::string

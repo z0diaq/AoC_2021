@@ -13,6 +13,13 @@ export constexpr int FAILED = 0;
 
 export namespace AoC
 {
+	enum class FileProcessingResult
+	{
+		InputFileNotFound,
+		ResultMatching,
+		ResultNotMatching
+	};
+
 	class Result
 	{
 		struct PerformanceSummaryTrigger
@@ -61,7 +68,7 @@ export namespace AoC
 		double      m_dataProcessingSec;
 		double      m_resultPrepareSec;
 
-		bool ProcessFileIfExists( const std::string& filename );
+		FileProcessingResult ProcessFileIfExists( const std::string& filename );
 		std::string InternalExecute( const TestLines& lines, bool isPartOne );
 		int CheckResult(
 			const std::string& computed,
