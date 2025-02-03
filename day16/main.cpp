@@ -4,5 +4,5 @@ import packet_decoder;
 
 int main(int argc, char* argv[])
 {
-	auto resultPart1 = packet_decoder::Result().Execute(argc, argv);
+	return static_cast< int >( packet_decoder::Result().Execute(argc, argv));
 }

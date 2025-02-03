@@ -4,5 +4,5 @@ import passage_pathing;
 
 int main( int argc, char* argv[ ] )
 {
-	auto resultPart1 = passage_pathing::Result( ).Execute( argc, argv );
+	return static_cast<int>( passage_pathing::Result( ).Execute( argc, argv ));
 }

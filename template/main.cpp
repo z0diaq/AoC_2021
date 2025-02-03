@@ -4,5 +4,5 @@ import aoc_template;
 
 int main(int argc, char* argv[])
 {
-	auto resultPart1 = aoc_template::Result().Execute(argc, argv);
+	return static_cast< int >( aoc_template::Result().Execute(argc, argv));
 }

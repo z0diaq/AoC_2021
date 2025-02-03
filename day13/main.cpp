@@ -4,5 +4,5 @@ import transparent_origami;
 
 int main( int argc, char* argv[ ] )
 {
-	auto resultPart1 = transparent_origami::Result( ).Execute( argc, argv );
+	return static_cast< int >( transparent_origami::Result( ).Execute( argc, argv ));
 }

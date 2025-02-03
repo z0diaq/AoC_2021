@@ -4,5 +4,5 @@ import extended_polymerization;
 
 int main(int argc, char* argv[])
 {
-	auto resultPart1 = extended_polymerization::Result().Execute(argc, argv);
+	return static_cast< int >( extended_polymerization::Result().Execute(argc, argv));
 }

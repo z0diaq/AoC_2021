@@ -4,5 +4,5 @@ import chitons;
 
 int main(int argc, char* argv[])
 {
-	auto resultPart1 = chitons::Result().Execute(argc, argv);
+	return static_cast< int >( chitons::Result().Execute(argc, argv));
 }
