@@ -71,10 +71,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(MY_LIBS)\boost_1_87_0;$(IncludePath)</IncludePath>
+    <IncludePath>$(MY_LIBS)\boost_1_87_0;$(MY_LIBS)\vcpkg\packages\gtest_x64-windows\include\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(MY_LIBS)\vcpkg\packages\gtest_x64-windows\lib\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>$(MY_LIBS)\boost_1_87_0;$(IncludePath)</IncludePath>
+    <IncludePath>$(MY_LIBS)\boost_1_87_0;$(MY_LIBS)\vcpkg\packages\gtest_x64-windows\include\;$(IncludePath)</IncludePath>
+    <LibraryPath>$(MY_LIBS)\vcpkg\packages\gtest_x64-windows\lib\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -115,6 +117,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>gtest.lib;gmock.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -132,6 +135,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>gtest.lib;gmock.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
