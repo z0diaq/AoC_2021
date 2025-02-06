@@ -32,7 +32,7 @@ Result::ProcessOne( const std::string& data )
 	m_packet = data;
 }
 
-void DecodePacket( BinaryHolder& holder );
+unsigned int DecodePacket( BinaryHolder& holder, unsigned int& sumOfPacketVersions );
 
 std::string
 Result::FinishPartOne( )
@@ -56,7 +56,7 @@ public:
 
 	unsigned int GetNextChunk( size_t bitsCount )
 	{
-		return std::bitset<10>( GetNextStringChunk( bitsCount ) ).to_ulong( );
+		return std::bitset<20>( GetNextStringChunk( bitsCount ) ).to_ulong( );
 	}
 
 	std::string GetNextStringChunk( size_t bitsCount )
@@ -78,21 +78,29 @@ public:
 		if( beyondPaddingPosition )
 			m_currentPosition += ( 4 - beyondPaddingPosition );
 	}
+
+	unsigned int CurrentPosition( ) const
+	{
+		return static_cast<unsigned int>( m_currentPosition );
+	}
 };
 
 unsigned int ParseLiteralValue( BinaryHolder& holder );
-unsigned int ParseOperator( BinaryHolder& holder );
+unsigned int ParseOperator( BinaryHolder& holder, unsigned int& sumOfPacketVersions );
 
-void DecodePacket( BinaryHolder& holder )
+unsigned int DecodePacket( BinaryHolder& holder, unsigned int& sumOfPacketVersions )
 {
-	
-
 	unsigned int versionNumber = holder.GetNextChunk( 3 );
+	sumOfPacketVersions += versionNumber;
 	unsigned int typeID = holder.GetNextChunk( 3 );
+
+	unsigned int value{ 0 };
 	if( typeID == 4 )
-		unsigned int literalValue = ParseLiteralValue( holder );
+		value = ParseLiteralValue( holder );
 	else
-		unsigned int operatorValue = ParseOperator( holder );
+		value = ParseOperator( holder, sumOfPacketVersions );
+
+	return value;
 }
 
 std::string HexToBinary( const std::string& str )
@@ -133,28 +141,33 @@ unsigned int ParseLiteralValue( BinaryHolder& holder )
 }
 
 
-unsigned int ParseOperator( BinaryHolder& holder )
+unsigned int ParseOperator( BinaryHolder& holder, unsigned int& sumOfPacketVersions )
 {
 	unsigned int lengthTypeID = holder.GetNextChunk( 1 );
 
 	if( lengthTypeID == 0 )
 	{
 		unsigned int totalLengthInBits = holder.GetNextChunk( 15 );
+		const unsigned int startPosition = holder.CurrentPosition( );
+		while( holder.CurrentPosition( ) - startPosition < totalLengthInBits )
+		{
+			unsigned int currentPacket = DecodePacket( holder, sumOfPacketVersions );
+
+		}
 	}
 	else
 	{
 		unsigned int numberOfSubPackets = holder.GetNextChunk( 11 );
-
+		for( unsigned int numPacket{ 0 }; numPacket < numberOfSubPackets; ++numPacket )
+		{
+			unsigned int currentPacket = DecodePacket( holder, sumOfPacketVersions );
+		}
 	}
+
+	return 0;
 }
 
-
-
-
-
-
 using namespace testing;
-
 
 TEST( GetNextChunk, CheckProcessing_D2FE28 )
 {
@@ -190,29 +203,29 @@ protected:
 TEST_P( HexToBinaryTest, BasicValues )
 {
 	auto binaryString = HexToBinary( m_scenario.m_hexString );
-	ASSERT_EQ( binaryString, std::string( m_scenario.m_expectedResult ));
+	ASSERT_EQ( binaryString, std::string( m_scenario.m_expectedResult ) );
 }
 
 INSTANTIATE_TEST_SUITE_P(
 	HexToBinaryTests,
 	HexToBinaryTest,
 	::testing::Values(
-		TestScenario{ "0", "0000", "Zero" },
-		TestScenario{ "1", "0001", "One" },
-		TestScenario{ "4", "0100", "Four" },
-		TestScenario{ "5", "0101", "Five" },
-		TestScenario{ "6", "0110", "Size" },
-		TestScenario{ "7", "0111", "Seven" },
-		TestScenario{ "8", "1000", "Eight" },
-		TestScenario{ "9", "1001", "Nine" },
-		TestScenario{ "A", "1010", "A" },
-		TestScenario{ "B", "1011", "B" },
-		TestScenario{ "C", "1100", "C" },
-		TestScenario{ "D", "1101", "D" },
-		TestScenario{ "E", "1110", "E" },
-		TestScenario{ "F", "1111", "F" },
-		TestScenario{ "D2FE28", "110100101111111000101000", "D2FE28" }
-	),
+	TestScenario{ "0", "0000", "Zero" },
+	TestScenario{ "1", "0001", "One" },
+	TestScenario{ "4", "0100", "Four" },
+	TestScenario{ "5", "0101", "Five" },
+	TestScenario{ "6", "0110", "Size" },
+	TestScenario{ "7", "0111", "Seven" },
+	TestScenario{ "8", "1000", "Eight" },
+	TestScenario{ "9", "1001", "Nine" },
+	TestScenario{ "A", "1010", "A" },
+	TestScenario{ "B", "1011", "B" },
+	TestScenario{ "C", "1100", "C" },
+	TestScenario{ "D", "1101", "D" },
+	TestScenario{ "E", "1110", "E" },
+	TestScenario{ "F", "1111", "F" },
+	TestScenario{ "D2FE28", "110100101111111000101000", "D2FE28" }
+),
 [ ]( const testing::TestParamInfo<HexToBinaryTest::ParamType>& p ) { return p.param.m_description; }
 );
 
@@ -226,4 +239,18 @@ TEST( ParseLiteralValue, D2FE28 )
 	unsigned int literalValue = ParseLiteralValue( holder );
 
 	ASSERT_EQ( literalValue, 2021 );
+}
+
+TEST( DecodePacket, 38006F45291200 )
+{
+	BinaryHolder holder( HexToBinary( "38006F45291200" ) );
+
+	unsigned int sumOfPacketVersions{ 0 };
+
+	ASSERT_EQ( holder.GetNextChunk( 3 ), 1 );
+	ASSERT_EQ( holder.GetNextChunk( 3 ), 6 );
+	ASSERT_EQ( holder.GetNextChunk( 1 ), 0 );
+	ASSERT_EQ( holder.GetNextChunk( 15 ), 27 );
+	ASSERT_EQ( DecodePacket( holder, sumOfPacketVersions ), 10 );
+	ASSERT_EQ( DecodePacket( holder, sumOfPacketVersions ), 20 );
 }
