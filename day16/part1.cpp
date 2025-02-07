@@ -22,6 +22,8 @@ import packet_decoder;
 
 #include <gtest/gtest.h>
 
+using ull = unsigned long long;
+
 using namespace packet_decoder;
 
 class BinaryHolder;
@@ -30,14 +32,6 @@ void
 Result::ProcessOne( const std::string& data )
 {
 	m_packet = data;
-}
-
-unsigned int DecodePacket( BinaryHolder& holder, unsigned int& sumOfPacketVersions );
-
-std::string
-Result::FinishPartOne( )
-{
-	return std::to_string( 0 );
 }
 
 std::string HexToBinary( const std::string& str );
@@ -85,22 +79,32 @@ public:
 	}
 };
 
-unsigned int ParseLiteralValue( BinaryHolder& holder );
-unsigned int ParseOperator( BinaryHolder& holder, unsigned int& sumOfPacketVersions );
+ull DecodePacket( BinaryHolder& holder, unsigned int& sumOfPacketVersions );
+std::string HexToBinary( const std::string& str );
 
-unsigned int DecodePacket( BinaryHolder& holder, unsigned int& sumOfPacketVersions )
+std::string
+Result::FinishPartOne( )
+{
+	unsigned int sumOfPacketVersions{ 0 };
+	BinaryHolder holder( HexToBinary( m_packet ) );
+	DecodePacket( holder, sumOfPacketVersions );
+
+	return std::to_string( sumOfPacketVersions );
+}
+
+ull ParseLiteralValue( BinaryHolder& holder );
+ull ParseOperator( BinaryHolder& holder, unsigned int& sumOfPacketVersions );
+
+ull DecodePacket( BinaryHolder& holder, unsigned int& sumOfPacketVersions )
 {
 	unsigned int versionNumber = holder.GetNextChunk( 3 );
 	sumOfPacketVersions += versionNumber;
 	unsigned int typeID = holder.GetNextChunk( 3 );
 
-	unsigned int value{ 0 };
 	if( typeID == 4 )
-		value = ParseLiteralValue( holder );
+		return ParseLiteralValue( holder );
 	else
-		value = ParseOperator( holder, sumOfPacketVersions );
-
-	return value;
+		return ParseOperator( holder, sumOfPacketVersions );
 }
 
 std::string HexToBinary( const std::string& str )
@@ -118,7 +122,7 @@ std::string HexToBinary( const std::string& str )
 	return binaryResult;
 }
 
-unsigned int ParseLiteralValue( BinaryHolder& holder )
+ull ParseLiteralValue( BinaryHolder& holder )
 {
 	std::string finalValue;
 	while( true )
@@ -129,19 +133,16 @@ unsigned int ParseLiteralValue( BinaryHolder& holder )
 			break;
 	}
 
-	std::cout << "final LiteralValue string = " << finalValue << std::endl;
-
-	if( finalValue.length( ) > 30 )
+	if( finalValue.length( ) > 64 )
 	{
 		std::cerr << "FinalValue has " << finalValue.length( ) << " characters!" << std::endl;
 		throw std::logic_error( "Need to use bigger bitset!" );
 	}
-	holder.AdjustPadding( );
-	return std::bitset<30>( finalValue ).to_ulong( );
+	//holder.AdjustPadding( );
+	return std::bitset<64>( finalValue ).to_ullong( );
 }
 
-
-unsigned int ParseOperator( BinaryHolder& holder, unsigned int& sumOfPacketVersions )
+ull ParseOperator( BinaryHolder& holder, unsigned int& sumOfPacketVersions )
 {
 	unsigned int lengthTypeID = holder.GetNextChunk( 1 );
 
@@ -151,7 +152,7 @@ unsigned int ParseOperator( BinaryHolder& holder, unsigned int& sumOfPacketVersi
 		const unsigned int startPosition = holder.CurrentPosition( );
 		while( holder.CurrentPosition( ) - startPosition < totalLengthInBits )
 		{
-			unsigned int currentPacket = DecodePacket( holder, sumOfPacketVersions );
+			ull currentPacket{ DecodePacket( holder, sumOfPacketVersions ) };
 
 		}
 	}
@@ -160,7 +161,7 @@ unsigned int ParseOperator( BinaryHolder& holder, unsigned int& sumOfPacketVersi
 		unsigned int numberOfSubPackets = holder.GetNextChunk( 11 );
 		for( unsigned int numPacket{ 0 }; numPacket < numberOfSubPackets; ++numPacket )
 		{
-			unsigned int currentPacket = DecodePacket( holder, sumOfPacketVersions );
+			ull currentPacket{ DecodePacket( holder, sumOfPacketVersions ) };
 		}
 	}
 
@@ -229,19 +230,17 @@ INSTANTIATE_TEST_SUITE_P(
 [ ]( const testing::TestParamInfo<HexToBinaryTest::ParamType>& p ) { return p.param.m_description; }
 );
 
-TEST( ParseLiteralValue, D2FE28 )
+TEST( DecodePacket, D2FE28 )
 {
 	BinaryHolder holder( HexToBinary( "D2FE28" ) );
 
-	// skip first 6 bits - they are of no concern to us
-	holder.GetNextChunk( 6 );//result ignored
+	unsigned int sumOfPacketVersions{ 0 };
+	ull value{ DecodePacket( holder, sumOfPacketVersions ) };
 
-	unsigned int literalValue = ParseLiteralValue( holder );
-
-	ASSERT_EQ( literalValue, 2021 );
+	ASSERT_EQ( value, 2021ULL );
 }
 
-TEST( DecodePacket, 38006F45291200 )
+TEST( VerifyProcessing, 38006F45291200 )
 {
 	BinaryHolder holder( HexToBinary( "38006F45291200" ) );
 
@@ -251,6 +250,61 @@ TEST( DecodePacket, 38006F45291200 )
 	ASSERT_EQ( holder.GetNextChunk( 3 ), 6 );
 	ASSERT_EQ( holder.GetNextChunk( 1 ), 0 );
 	ASSERT_EQ( holder.GetNextChunk( 15 ), 27 );
-	ASSERT_EQ( DecodePacket( holder, sumOfPacketVersions ), 10 );
-	ASSERT_EQ( DecodePacket( holder, sumOfPacketVersions ), 20 );
+	ASSERT_EQ( DecodePacket( holder, sumOfPacketVersions ), 10ULL );
+	ASSERT_EQ( DecodePacket( holder, sumOfPacketVersions ), 20ULL );
+}
+
+TEST( VerifyProcessing, EE00D40C823060 )
+{
+	BinaryHolder holder( HexToBinary( "EE00D40C823060" ) );
+
+	unsigned int sumOfPacketVersions{ 0 };
+
+	ASSERT_EQ( holder.GetNextChunk( 3 ), 7 );
+	ASSERT_EQ( holder.GetNextChunk( 3 ), 3 );
+	ASSERT_EQ( holder.GetNextChunk( 1 ), 1 );
+	ASSERT_EQ( holder.GetNextChunk( 11 ), 3 );
+	ASSERT_EQ( DecodePacket( holder, sumOfPacketVersions ), 1ULL );
+	ASSERT_EQ( DecodePacket( holder, sumOfPacketVersions ), 2ULL );
+	ASSERT_EQ( DecodePacket( holder, sumOfPacketVersions ), 3ULL );
+}
+
+TEST( DecodePacket, 8A004A801A8002F478 )
+{
+	BinaryHolder holder( HexToBinary( "8A004A801A8002F478" ) );
+
+	unsigned int sumOfPacketVersions{ 0 };
+	ull value{ DecodePacket( holder, sumOfPacketVersions ) };
+
+	ASSERT_EQ( sumOfPacketVersions, 16ULL );
+}
+
+TEST( DecodePacket, 8620080001611562C8802118E34 )
+{
+	BinaryHolder holder( HexToBinary( "620080001611562C8802118E34" ) );
+
+	unsigned int sumOfPacketVersions{ 0 };
+	DecodePacket( holder, sumOfPacketVersions );
+
+	ASSERT_EQ( sumOfPacketVersions, 12 );
+}
+
+TEST( DecodePacket, 8C0015000016115A2E0802F182340 )
+{
+	BinaryHolder holder( HexToBinary( "C0015000016115A2E0802F182340" ) );
+
+	unsigned int sumOfPacketVersions{ 0 };
+	DecodePacket( holder, sumOfPacketVersions );
+
+	ASSERT_EQ( sumOfPacketVersions, 23 );
+}
+
+TEST( DecodePacket, A0016C880162017C3686B18A3D4780 )
+{
+	BinaryHolder holder( HexToBinary( "A0016C880162017C3686B18A3D4780" ) );
+
+	unsigned int sumOfPacketVersions{ 0 };
+	DecodePacket( holder, sumOfPacketVersions );
+
+	ASSERT_EQ( sumOfPacketVersions, 31 );
 }

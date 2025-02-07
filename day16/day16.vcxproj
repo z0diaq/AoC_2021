@@ -150,20 +150,6 @@
     <ClCompile Include="result.ixx" />
     <ClCompile Include="shared.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <Text Include="sample_input_a.txt" />
-    <Text Include="sample_input_a_result_part1.txt" />
-    <Text Include="sample_input_a_result_part2.txt" />
-    <Text Include="sample_input_b.txt" />
-    <Text Include="sample_input_b_result_part1.txt" />
-    <Text Include="sample_input_b_result_part2.txt" />
-    <Text Include="sample_input_c.txt" />
-    <Text Include="sample_input_c_result_part1.txt" />
-    <Text Include="sample_input_c_result_part2.txt" />
-    <Text Include="sample_input_d.txt" />
-    <Text Include="sample_input_d_result_part1.txt" />
-    <Text Include="sample_input_d_result_part2.txt" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
