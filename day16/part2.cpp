@@ -24,10 +24,5 @@ using namespace packet_decoder;
 void
 Result::ProcessTwo(const std::string& data)
 {
-}
-
-std::string
-Result::FinishPartTwo()
-{
-	return std::to_string(0);
+	m_packet = data;
 }

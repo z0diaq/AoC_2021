@@ -4,6 +4,7 @@ import packet_decoder;
 #include <iostream>
 #include <string>
 #include <algorithm>
+#include <numeric>
 #include <stdexcept>
 #include <bitset>
 
@@ -75,7 +76,7 @@ public:
 
 	unsigned int CurrentPosition( ) const
 	{
-		return static_cast<unsigned int>( m_currentPosition );
+		return static_cast< unsigned int >( m_currentPosition );
 	}
 };
 
@@ -92,19 +93,27 @@ Result::FinishPartOne( )
 	return std::to_string( sumOfPacketVersions );
 }
 
+std::string
+Result::FinishPartTwo( )
+{
+	unsigned int sumOfPacketVersions{ 0 };
+	BinaryHolder holder( HexToBinary( m_packet ) );
+	return std::to_string( DecodePacket( holder, sumOfPacketVersions ) );
+}
+
 ull ParseLiteralValue( BinaryHolder& holder );
-ull ParseOperator( BinaryHolder& holder, unsigned int& sumOfPacketVersions );
+ull ParseOperator( BinaryHolder& holder, const unsigned int typeID, unsigned int& sumOfPacketVersions );
 
 ull DecodePacket( BinaryHolder& holder, unsigned int& sumOfPacketVersions )
 {
-	unsigned int versionNumber = holder.GetNextChunk( 3 );
+	unsigned int versionNumber{ holder.GetNextChunk( 3 ) };
 	sumOfPacketVersions += versionNumber;
-	unsigned int typeID = holder.GetNextChunk( 3 );
+	const unsigned int typeID{ holder.GetNextChunk( 3 ) };
 
 	if( typeID == 4 )
 		return ParseLiteralValue( holder );
 	else
-		return ParseOperator( holder, sumOfPacketVersions );
+		return ParseOperator( holder, typeID, sumOfPacketVersions );
 }
 
 std::string HexToBinary( const std::string& str )
@@ -142,9 +151,10 @@ ull ParseLiteralValue( BinaryHolder& holder )
 	return std::bitset<64>( finalValue ).to_ullong( );
 }
 
-ull ParseOperator( BinaryHolder& holder, unsigned int& sumOfPacketVersions )
+ull ParseOperator( BinaryHolder& holder, unsigned int typeID, unsigned int& sumOfPacketVersions )
 {
 	unsigned int lengthTypeID = holder.GetNextChunk( 1 );
+	std::vector<ull> packets{};
 
 	if( lengthTypeID == 0 )
 	{
@@ -152,7 +162,7 @@ ull ParseOperator( BinaryHolder& holder, unsigned int& sumOfPacketVersions )
 		const unsigned int startPosition = holder.CurrentPosition( );
 		while( holder.CurrentPosition( ) - startPosition < totalLengthInBits )
 		{
-			ull currentPacket{ DecodePacket( holder, sumOfPacketVersions ) };
+			packets.push_back( DecodePacket( holder, sumOfPacketVersions ) );
 
 		}
 	}
@@ -161,9 +171,29 @@ ull ParseOperator( BinaryHolder& holder, unsigned int& sumOfPacketVersions )
 		unsigned int numberOfSubPackets = holder.GetNextChunk( 11 );
 		for( unsigned int numPacket{ 0 }; numPacket < numberOfSubPackets; ++numPacket )
 		{
-			ull currentPacket{ DecodePacket( holder, sumOfPacketVersions ) };
+			packets.push_back( DecodePacket( holder, sumOfPacketVersions ) );
 		}
 	}
+
+	switch( typeID )
+	{
+	case 0:
+		return std::accumulate( packets.begin( ), packets.end( ), 0ULL );
+	case 1:
+		return std::reduce( packets.begin( ), packets.end( ), 1ULL, std::multiplies<>( ) );
+	case 2:
+		return *std::min_element( packets.begin( ), packets.end( ) );
+	case 3:
+		return *std::max_element( packets.begin( ), packets.end( ) );
+	case 5:
+		return packets.front( ) > packets.back( );
+	case 6:
+		return packets.front( ) < packets.back( );
+	case 7:
+		return packets.front( ) == packets.back( );
+	}
+
+	throw std::logic_error( "Unhandled operator!" );
 
 	return 0;
 }
@@ -269,7 +299,7 @@ TEST( VerifyProcessing, EE00D40C823060 )
 	ASSERT_EQ( DecodePacket( holder, sumOfPacketVersions ), 3ULL );
 }
 
-TEST( DecodePacket, 8A004A801A8002F478 )
+TEST( DecodePacket_SumOfVersions, 8A004A801A8002F478 )
 {
 	BinaryHolder holder( HexToBinary( "8A004A801A8002F478" ) );
 
@@ -279,7 +309,7 @@ TEST( DecodePacket, 8A004A801A8002F478 )
 	ASSERT_EQ( sumOfPacketVersions, 16ULL );
 }
 
-TEST( DecodePacket, 8620080001611562C8802118E34 )
+TEST( DecodePacket_SumOfVersions, 8620080001611562C8802118E34 )
 {
 	BinaryHolder holder( HexToBinary( "620080001611562C8802118E34" ) );
 
@@ -289,7 +319,7 @@ TEST( DecodePacket, 8620080001611562C8802118E34 )
 	ASSERT_EQ( sumOfPacketVersions, 12 );
 }
 
-TEST( DecodePacket, 8C0015000016115A2E0802F182340 )
+TEST( DecodePacket_SumOfVersions, 8C0015000016115A2E0802F182340 )
 {
 	BinaryHolder holder( HexToBinary( "C0015000016115A2E0802F182340" ) );
 
@@ -299,7 +329,7 @@ TEST( DecodePacket, 8C0015000016115A2E0802F182340 )
 	ASSERT_EQ( sumOfPacketVersions, 23 );
 }
 
-TEST( DecodePacket, A0016C880162017C3686B18A3D4780 )
+TEST( DecodePacket_SumOfVersions, A0016C880162017C3686B18A3D4780 )
 {
 	BinaryHolder holder( HexToBinary( "A0016C880162017C3686B18A3D4780" ) );
 
@@ -307,4 +337,84 @@ TEST( DecodePacket, A0016C880162017C3686B18A3D4780 )
 	DecodePacket( holder, sumOfPacketVersions );
 
 	ASSERT_EQ( sumOfPacketVersions, 31 );
+}
+
+TEST( DecodePacket_ExecuteOperator, C200B40A82 )
+{
+	BinaryHolder holder( HexToBinary( "C200B40A82" ) );
+
+	unsigned int sumOfPacketVersions{ 0 };
+	ull result{ DecodePacket( holder, sumOfPacketVersions ) };
+
+	ASSERT_EQ( result, 3 );
+}
+
+TEST( DecodePacket_ExecuteOperator, 04005AC33890 )
+{
+	BinaryHolder holder( HexToBinary( "04005AC33890" ) );
+
+	unsigned int sumOfPacketVersions{ 0 };
+	ull result{ DecodePacket( holder, sumOfPacketVersions ) };
+
+	ASSERT_EQ( result, 54 );
+}
+
+TEST( DecodePacket_ExecuteOperator, 880086C3E88112 )
+{
+	BinaryHolder holder( HexToBinary( "880086C3E88112" ) );
+
+	unsigned int sumOfPacketVersions{ 0 };
+	ull result{ DecodePacket( holder, sumOfPacketVersions ) };
+
+	ASSERT_EQ( result, 7 );
+}
+
+TEST( DecodePacket_ExecuteOperator, CE00C43D881120 )
+{
+	BinaryHolder holder( HexToBinary( "CE00C43D881120" ) );
+
+	unsigned int sumOfPacketVersions{ 0 };
+	ull result{ DecodePacket( holder, sumOfPacketVersions ) };
+
+	ASSERT_EQ( result, 9 );
+}
+
+TEST( DecodePacket_ExecuteOperator, D8005AC2A8F0 )
+{
+	BinaryHolder holder( HexToBinary( "D8005AC2A8F0" ) );
+
+	unsigned int sumOfPacketVersions{ 0 };
+	ull result{ DecodePacket( holder, sumOfPacketVersions ) };
+
+	ASSERT_EQ( result, 1 );
+}
+
+TEST( DecodePacket_ExecuteOperator, F600BC2D8F )
+{
+	BinaryHolder holder( HexToBinary( "F600BC2D8F" ) );
+
+	unsigned int sumOfPacketVersions{ 0 };
+	ull result{ DecodePacket( holder, sumOfPacketVersions ) };
+
+	ASSERT_EQ( result, 0 );
+}
+
+TEST( DecodePacket_ExecuteOperator, 9C005AC2F8F0 )
+{
+	BinaryHolder holder( HexToBinary( "9C005AC2F8F0" ) );
+
+	unsigned int sumOfPacketVersions{ 0 };
+	ull result{ DecodePacket( holder, sumOfPacketVersions ) };
+
+	ASSERT_EQ( result, 0 );
+}
+
+TEST( DecodePacket_ExecuteOperator, 9C0141080250320F1802104A08 )
+{
+	BinaryHolder holder( HexToBinary( "9C0141080250320F1802104A08" ) );
+
+	unsigned int sumOfPacketVersions{ 0 };
+	ull result{ DecodePacket( holder, sumOfPacketVersions ) };
+
+	ASSERT_EQ( result, 1 );
 }
