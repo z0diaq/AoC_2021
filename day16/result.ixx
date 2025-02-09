@@ -4,6 +4,9 @@ module;
 
 export module packet_decoder;
 
+export import :binary_holder;
+export import :utils;
+
 import AoC;
 
 export namespace packet_decoder
@@ -12,11 +15,9 @@ export namespace packet_decoder
 	{
 
 	public:
-		Result();
+		Result( ) = default;
 
 	protected:
-		virtual void Init() override;
-
 		virtual void ProcessOne( const std::string& data ) override;
 		virtual std::string FinishPartOne( ) override;
 

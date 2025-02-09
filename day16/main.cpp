@@ -1,6 +1,5 @@
 import packet_decoder;
 
-#include <compare>
 #include <gtest/gtest.h>
 
 int main(int argc, char* argv[])

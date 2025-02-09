@@ -144,7 +144,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="binaryHolder.cpp" />
+    <ClCompile Include="binaryHolder.ixx" />
+    <ClCompile Include="binaryHolderUnitTests.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="packetDecoderUtilsUnitTests.cpp" />
+    <ClCompile Include="packetDocederUtils.ixx" />
     <ClCompile Include="part1.cpp" />
     <ClCompile Include="part2.cpp" />
     <ClCompile Include="result.ixx" />
