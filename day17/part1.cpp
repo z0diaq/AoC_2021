@@ -61,6 +61,11 @@ public:
 	auto Bounds( ) const {
 		return std::make_pair( m_rangeX, m_rangeY );
 	}
+
+	bool Overshoot( const Point& pt ) const
+	{
+		return pt.m_x > m_rangeX.m_max || pt.m_y < m_rangeY.m_min;
+	}
 };
 
 int FindMaxHeight( const TargetArea& target );
@@ -91,8 +96,7 @@ std::pair<bool, int> SimulateTrajectory( int vx, int vy, const TargetArea& targe
 	Point pos{ 0, 0 };
 	int max_height = 0;
 
-	while( pos.m_x <= target.Bounds( ).first.m_max &&
-		pos.m_y >= target.Bounds( ).second.m_max ) {
+	while( false == target.Overshoot( pos ) ) {
 		pos.m_x += vx;
 		pos.m_y += vy;
 		max_height = std::max( max_height, pos.m_y );
@@ -110,25 +114,22 @@ std::pair<bool, int> SimulateTrajectory( int vx, int vy, const TargetArea& targe
 }
 
 int FindMaxHeight( const TargetArea& target ) {
-	auto [minX, maxX] = target.Bounds( ).first;
-	auto [minY, maxY] = target.Bounds( ).second;
+	const Range rangeX{ target.Bounds( ).first };
+	const Range rangeY{ target.Bounds( ).second };
 
 	// Calculate velocity bounds
-	int v_xmin = std::max( 1, minX );
-	int v_xmax = maxX;
-	int v_ymin = minY;
-	int v_ymax = abs( minY );  // Maximum possible upward velocity
+	const int v_xmax{ rangeX.m_max };
+	const int v_ymax{ abs( rangeY.m_min ) };  // Maximum possible upward velocity
 
 	int maxHeight{ 0 };
 
-	for( int vx{ v_xmin }; vx <= v_xmax; ++vx )
+	for( int vx{ 1 }; vx <= v_xmax; ++vx )
 	{
-		for( int vy{ v_ymin }; vy <= v_ymax; ++vy )
+		for( int vy{ 1 }; vy <= v_ymax; ++vy )
 		{
 			auto [found, localMaxHeight] = SimulateTrajectory( vx, vy, target );
 			if( found )
 				maxHeight = std::max( maxHeight, localMaxHeight );
-				
 		}
 	}
 
