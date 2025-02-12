@@ -4,6 +4,9 @@ module;
 
 export module trick_shot;
 
+export import :target_area;
+export import :utils;
+
 import AoC;
 
 export namespace trick_shot
@@ -12,11 +15,9 @@ export namespace trick_shot
 	{
 
 	public:
-		Result();
+		Result( ) = default;
 
 	protected:
-		virtual void Init() override;
-
 		virtual void ProcessOne( const std::string& data ) override;
 		virtual std::string FinishPartOne( ) override;
 
@@ -28,5 +29,7 @@ export namespace trick_shot
 	private:
 		//data
 		std::string m_targetAreaDescription;
+
+		std::pair<int, int> Solve( const std::string& targetAreaDescription ) const;
 	};
 }
