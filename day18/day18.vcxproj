@@ -149,6 +149,7 @@
     <ClCompile Include="result.ixx" />
     <ClCompile Include="shared.cpp" />
     <ClCompile Include="utils.ixx" />
+    <ClCompile Include="utilsUnitTests.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -6,30 +6,18 @@ export module snailfish:node;
 
 export namespace snailfish
 {
-	class Node {
-	private:
+	struct Node
+	{
+		Node* m_parent;// view type
 		int m_value{ 0 };
-		std::unique_ptr<Node> m_left, m_right;
+		std::unique_ptr<Node> m_left;
+		std::unique_ptr<Node> m_right;
 
-	public:
-		Node( ) = default;
-		Node( int value ) : m_value( value ) { }
-
-		int Value( ) const {
-			return m_value;
-		}
+		Node( Node* parent ) : m_parent( parent ) { }
+		Node( Node *parent, int value ) : m_parent( parent ), m_value( value ) { }
 
 		bool IsRegular( ) const {
 			return !m_left && !m_right;
-		}
-
-		void SetValue( int v ) {
-			m_value = v;
-		}
-
-		void SetChildren( std::unique_ptr<Node> l, std::unique_ptr<Node> r ) {
-			m_left = std::move( l );
-			m_right = std::move( r );
 		}
 	};
 }

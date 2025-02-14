@@ -11,7 +11,7 @@ import :node;
 export namespace snailfish
 {
 	// Parse a snailfish number from string
-	std::unique_ptr<Node> parse( const std::string& str ) {
+	std::unique_ptr<Node> Parse( Node* parent, const std::string& str ) {
 		if( std::all_of( str.begin( ), str.end( ), ::isdigit ) ) {
 			return std::make_unique<Node>( std::stoi( str ) );
 		}
@@ -27,10 +27,40 @@ export namespace snailfish
 			}
 		}
 
-		auto root = std::make_unique<Node>( );
-		auto left = parse( str.substr( 1, commaPosition - 1 ) );
-		auto right = parse( str.substr( commaPosition + 1, str.size( ) - commaPosition - 2 ) );
-		root->SetChildren( std::move( left ), std::move( right ) );
+		auto root = std::make_unique<Node>( parent );
+		root->m_left = Parse( root.get( ), str.substr( 1, commaPosition - 1 ) );
+		root->m_right = Parse( root.get( ), str.substr( commaPosition + 1, str.size( ) - commaPosition - 2 ) );
 		return root;
+	}
+
+	Node* FindPreviousLeaf( Node* node );
+	Node* FindNextLeaf( Node* node );
+
+	bool Explode( std::unique_ptr<Node>& node, int depth = 0 ) {
+		if( !node ) return false;
+
+		if( node->IsRegular( ) ) return false;
+
+		if( depth >= 4 ) {
+			if( node->m_left && node->m_right )
+			{
+				Node* previousLeaf = FindPreviousLeaf( node );
+				Node* nextLeaf = FindNextLeaf( node );
+
+				if( previousLeaf )
+					previousLeaf->m_value += node->m_left->m_value;
+				if( nextLeaf )
+					nextLeaf->m_value += node->m_right->m_value;
+
+				node->m_value = 0;
+				node->m_left.reset( );
+				node->m_right.reset( );
+
+				return true;
+			}
+		}
+
+		return Explode( node->m_left, depth + 1 ) ||
+			Explode( node->m_right, depth + 1 );
 	}
 }
