@@ -4,6 +4,8 @@ module;
 #include <string>
 #include <algorithm>
 
+#include <iostream>
+
 export module snailfish:utils;
 
 import :node;
@@ -66,6 +68,8 @@ export namespace snailfish
 			node->m_left.reset( );
 			node->m_right.reset( );
 
+			std::cout << " EXPLODED ! ";
+
 			return true;
 		}
 
@@ -80,12 +84,15 @@ export namespace snailfish
 		{
 			auto sourceNode{ node };
 			node = node->m_parent;
-			if( !node || !node->m_left )
+			if( !node )
 				return nullptr;
-			if( node->m_left.get( ) == sourceNode )
-				continue;
-			else
-				break;
+			if( node->m_left )
+			{
+				if( node->m_left.get( ) == sourceNode )
+					continue;
+				else
+					break;
+			}
 		}
 
 		node = node->m_left.get( );
@@ -101,17 +108,73 @@ export namespace snailfish
 		{
 			auto sourceNode{ node };
 			node = node->m_parent;
-			if( !node || !node->m_right )
+			if( !node )
 				return nullptr;
-			if( node->m_right.get( ) == sourceNode )
-				continue;
-			else
-				break;
+			if( node->m_right )
+			{
+				if( node->m_right.get( ) == sourceNode )
+					continue;
+				else
+					break;
+			}
 		}
 
 		node = node->m_right.get( );
 		while( node->m_left )
 			node = node->m_left.get( );
 		return node;
+	}
+
+	bool Split( std::unique_ptr<Node>& node ) {
+		if( !node ) return false;
+
+		if( node->IsLeaf( ) ) {
+			if( node->m_value >= 10 ) {
+				int val = node->m_value;
+				node->m_left = std::make_unique<Node>( node.get( ), val / 2 );
+				node->m_right = std::make_unique<Node>( node.get( ), ( val + 1 ) / 2 );
+				node->m_value = 0;
+
+				std::cout << " SPLIT ! ";
+
+				return true;
+			}
+			return false;
+		}
+
+		return Split( node->m_left ) || Split( node->m_right );
+	}
+
+	void Reduce( std::unique_ptr<Node>& root, bool once = false ) {
+		bool reduced;
+		do {
+			std::cout << "Trying to reduce " << Format( root.get( ) ) << " ... ";
+			reduced = Explode( root ) || Split( root );
+			std::cout << ( reduced ? "YES" : "NO" ) << std::endl;
+			if( once )
+				return;
+		} while( reduced );
+	}
+
+	int Magnitude( const std::unique_ptr<Node>& root ) {
+		if( !root ) return 0;
+
+		if( root->IsLeaf( ) ) {
+			return root->m_value;
+		}
+
+		return 3 * Magnitude( root->m_left ) +
+			2 * Magnitude( root->m_right );
+	}
+
+	std::unique_ptr<Node> Add( std::unique_ptr<Node>&& left, std::unique_ptr<Node>&& right )
+	{
+		auto result = std::make_unique<Node>( nullptr, 0 );
+		result->m_left = std::move( left );
+		result->m_right = std::move( right );
+
+		//Reduce( result );
+
+		return result;
 	}
 }

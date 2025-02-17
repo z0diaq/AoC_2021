@@ -120,3 +120,137 @@ INSTANTIATE_TEST_SUITE_P(
 	}
 );
 
+
+TEST( Reduce, MultipleTimes )
+{
+	auto root{ snailfish::Parse( nullptr, "[[[[[4,3],4],4],[7,[[8,4],9]]],[1,1]]" ) };
+
+	snailfish::Reduce( root, true );
+	std::string afterReduce{ snailfish::Format( root.get( ) ) };
+	ASSERT_EQ( afterReduce, "[[[[0,7],4],[7,[[8,4],9]]],[1,1]]" );
+
+	snailfish::Reduce( root, true );
+	afterReduce = snailfish::Format( root.get( ) );
+	ASSERT_EQ( afterReduce, "[[[[0,7],4],[15,[0,13]]],[1,1]]" );
+
+	snailfish::Reduce( root, true );
+	afterReduce = snailfish::Format( root.get( ) );
+	ASSERT_EQ( afterReduce, "[[[[0,7],4],[[7,8],[0,13]]],[1,1]]" );
+
+	snailfish::Reduce( root, true );
+	afterReduce = snailfish::Format( root.get( ) );
+	ASSERT_EQ( afterReduce, "[[[[0,7],4],[[7,8],[0,[6,7]]]],[1,1]]" );
+
+	snailfish::Reduce( root, true );
+	afterReduce = snailfish::Format( root.get( ) );
+	ASSERT_EQ( afterReduce, "[[[[0,7],4],[[7,8],[6,0]]],[8,1]]" );
+}
+
+TEST( Reduce, Example1 )
+{
+	auto root{ snailfish::Parse( nullptr, "[[[[1,1],[2,2]],[3,3]],[4,4]]" ) };
+
+	snailfish::Reduce( root );
+	std::string afterReduce{ snailfish::Format( root.get( ) ) };
+	ASSERT_EQ( afterReduce, "[[[[1,1],[2,2]],[3,3]],[4,4]]" );
+}
+
+TEST( Reduce, Example2 )
+{
+	auto root{ snailfish::Parse( nullptr, "[[[[[1,1],[2,2]],[3,3]],[4,4]],[5,5]]" ) };
+
+	snailfish::Reduce( root );
+	std::string afterReduce{ snailfish::Format( root.get( ) ) };
+	ASSERT_EQ( afterReduce, "[[[[3,0],[5,3]],[4,4]],[5,5]]" );
+}
+
+TEST( Magnitude, Example1 )
+{
+	auto root{ snailfish::Parse( nullptr, "[[1,2],[[3,4],5]]" ) };
+	ASSERT_EQ( snailfish::Magnitude( root ), 143 );
+}
+
+TEST( Magnitude, Example2 )
+{
+	auto root{ snailfish::Parse( nullptr, "[[[[0,7],4],[[7,8],[6,0]]],[8,1]]" ) };
+	ASSERT_EQ( snailfish::Magnitude( root ), 1384 );
+}
+
+TEST( Magnitude, Example3 )
+{
+	auto root{ snailfish::Parse( nullptr, "[[[[1,1],[2,2]],[3,3]],[4,4]]" ) };
+	ASSERT_EQ( snailfish::Magnitude( root ), 445 );
+}
+
+TEST( Magnitude, Example4 )
+{
+	auto root{ snailfish::Parse( nullptr, "[[[[3,0],[5,3]],[4,4]],[5,5]]" ) };
+	ASSERT_EQ( snailfish::Magnitude( root ), 791 );
+}
+
+TEST( Magnitude, Example5 )
+{
+	auto root{ snailfish::Parse( nullptr, "[[[[5,0],[7,4]],[5,5]],[6,6]]" ) };
+	ASSERT_EQ( snailfish::Magnitude( root ), 1137 );
+}
+
+TEST( Magnitude, Example6 )
+{
+	auto root{ snailfish::Parse( nullptr, "[[[[8,7],[7,7]],[[8,6],[7,7]]],[[[0,7],[6,6]],[8,7]]]" ) };
+	ASSERT_EQ( snailfish::Magnitude( root ), 3488 );
+}
+
+TEST( Magnitude, Example7 )
+{
+	auto root{ snailfish::Parse( nullptr, "[[[[6,6],[7,6]],[[7,7],[7,0]]],[[[7,7],[7,7]],[[7,8],[9,9]]]]" ) };
+	ASSERT_EQ( snailfish::Magnitude( root ), 4140 );
+}
+
+
+
+
+
+TEST( Add, Example1 )
+{
+	auto root{ snailfish::Parse( nullptr, "[1,1]" ) };
+	root = snailfish::Add( std::move( root ), snailfish::Parse( nullptr, "[2,2]" ) );
+	root = snailfish::Add( std::move( root ), snailfish::Parse( nullptr, "[3,3]" ) );
+	root = snailfish::Add( std::move( root ), snailfish::Parse( nullptr, "[4,4]" ) );
+
+	snailfish::Reduce( root );
+
+	auto result{ snailfish::Format( root.get( ) ) };
+	ASSERT_EQ( result, std::string( "[[[[1,1],[2,2]],[3,3]],[4,4]]" ) );
+}
+
+
+TEST( Add, Example2 )
+{
+	auto root{ snailfish::Parse( nullptr, "[1,1]" ) };
+	root = snailfish::Add( std::move( root ), snailfish::Parse( nullptr, "[2,2]" ) );
+	root = snailfish::Add( std::move( root ), snailfish::Parse( nullptr, "[3,3]" ) );
+	root = snailfish::Add( std::move( root ), snailfish::Parse( nullptr, "[4,4]" ) );
+	root = snailfish::Add( std::move( root ), snailfish::Parse( nullptr, "[5,5]" ) );
+
+	snailfish::Reduce( root );
+
+	auto result{ snailfish::Format( root.get( ) ) };
+	ASSERT_EQ( result, std::string( "[[[[3,0],[5,3]],[4,4]],[5,5]]" ) );
+}
+
+TEST( Add, Example3 )
+{
+	auto root{ snailfish::Parse( nullptr, "[1,1]" ) };
+	root = snailfish::Add( std::move( root ), snailfish::Parse( nullptr, "[2,2]" ) );
+	root = snailfish::Add( std::move( root ), snailfish::Parse( nullptr, "[3,3]" ) );
+	root = snailfish::Add( std::move( root ), snailfish::Parse( nullptr, "[4,4]" ) );
+	root = snailfish::Add( std::move( root ), snailfish::Parse( nullptr, "[5,5]" ) );
+	root = snailfish::Add( std::move( root ), snailfish::Parse( nullptr, "[6,6]" ) );
+
+	snailfish::Reduce( root );
+
+	auto result{ snailfish::Format( root.get( ) ) };
+	ASSERT_EQ( result, std::string( "[[[[5,0],[7,4]],[5,5]],[6,6]]" ) );
+}
+
+
