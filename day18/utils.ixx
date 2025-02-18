@@ -4,8 +4,6 @@ module;
 #include <string>
 #include <algorithm>
 
-#include <iostream>
-
 export module snailfish:utils;
 
 import :node;
@@ -61,14 +59,13 @@ export namespace snailfish
 
 			if( previousLeaf )
 				previousLeaf->m_value += node->m_left->m_value;
+
 			if( nextLeaf )
 				nextLeaf->m_value += node->m_right->m_value;
 
 			node->m_value = 0;
 			node->m_left.reset( );
 			node->m_right.reset( );
-
-			std::cout << " EXPLODED ! ";
 
 			return true;
 		}
@@ -86,6 +83,7 @@ export namespace snailfish
 			node = node->m_parent;
 			if( !node )
 				return nullptr;
+
 			if( node->m_left )
 			{
 				if( node->m_left.get( ) == sourceNode )
@@ -110,6 +108,7 @@ export namespace snailfish
 			node = node->m_parent;
 			if( !node )
 				return nullptr;
+
 			if( node->m_right )
 			{
 				if( node->m_right.get( ) == sourceNode )
@@ -135,8 +134,6 @@ export namespace snailfish
 				node->m_right = std::make_unique<Node>( node.get( ), ( val + 1 ) / 2 );
 				node->m_value = 0;
 
-				std::cout << " SPLIT ! ";
-
 				return true;
 			}
 			return false;
@@ -148,9 +145,7 @@ export namespace snailfish
 	void Reduce( std::unique_ptr<Node>& root, bool once = false ) {
 		bool reduced;
 		do {
-			std::cout << "Trying to reduce " << Format( root.get( ) ) << " ... ";
 			reduced = Explode( root ) || Split( root );
-			std::cout << ( reduced ? "YES" : "NO" ) << std::endl;
 			if( once )
 				return;
 		} while( reduced );
@@ -171,9 +166,11 @@ export namespace snailfish
 	{
 		auto result = std::make_unique<Node>( nullptr, 0 );
 		result->m_left = std::move( left );
+		result->m_left->m_parent = result.get( );
 		result->m_right = std::move( right );
+		result->m_right->m_parent = result.get( );
 
-		//Reduce( result );
+		Reduce( result );
 
 		return result;
 	}

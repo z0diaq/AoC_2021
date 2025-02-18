@@ -1,6 +1,7 @@
 module;
 
 #include <string>
+#include <vector>
 
 export module snailfish;
 
@@ -30,5 +31,6 @@ export namespace snailfish
 
 	private:
 		//data
+		std::vector<std::string> m_numbers;
 	};
 }

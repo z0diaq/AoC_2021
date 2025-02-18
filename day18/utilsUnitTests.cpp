@@ -232,7 +232,7 @@ TEST( Add, Example2 )
 	root = snailfish::Add( std::move( root ), snailfish::Parse( nullptr, "[4,4]" ) );
 	root = snailfish::Add( std::move( root ), snailfish::Parse( nullptr, "[5,5]" ) );
 
-	snailfish::Reduce( root );
+	//snailfish::Reduce( root );
 
 	auto result{ snailfish::Format( root.get( ) ) };
 	ASSERT_EQ( result, std::string( "[[[[3,0],[5,3]],[4,4]],[5,5]]" ) );
@@ -247,7 +247,7 @@ TEST( Add, Example3 )
 	root = snailfish::Add( std::move( root ), snailfish::Parse( nullptr, "[5,5]" ) );
 	root = snailfish::Add( std::move( root ), snailfish::Parse( nullptr, "[6,6]" ) );
 
-	snailfish::Reduce( root );
+	//snailfish::Reduce( root );
 
 	auto result{ snailfish::Format( root.get( ) ) };
 	ASSERT_EQ( result, std::string( "[[[[5,0],[7,4]],[5,5]],[6,6]]" ) );

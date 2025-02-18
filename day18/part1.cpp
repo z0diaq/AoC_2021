@@ -24,10 +24,21 @@ using namespace snailfish;
 void
 Result::ProcessOne( const std::string& data )
 {
+	m_numbers.push_back( data );
 }
 
 std::string
 Result::FinishPartOne( )
 {
-	return std::to_string( 0 );
+	std::reverse( m_numbers.begin( ), m_numbers.end( ) );
+	auto root{ Parse( nullptr, m_numbers.back( ) ) };
+	m_numbers.pop_back( );
+
+	while( false == m_numbers.empty( ) )
+	{
+		root = Add( std::move( root ), Parse( nullptr, m_numbers.back( ) ) );
+		m_numbers.pop_back( );
+	}
+
+	return std::to_string( Magnitude( root ) );
 }
