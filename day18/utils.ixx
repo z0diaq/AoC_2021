@@ -11,7 +11,7 @@ import :node;
 export namespace snailfish
 {
 	// Parse a snailfish number from string
-	std::unique_ptr<Node> Parse( Node* parent, const std::string& str ) {
+	std::unique_ptr<Node> Parse( const std::string& str, Node* parent = nullptr ) {
 		if( std::all_of( str.begin( ), str.end( ), ::isdigit ) ) {
 			return std::make_unique<Node>( parent, std::stoi( str ) );
 		}
@@ -28,8 +28,8 @@ export namespace snailfish
 		}
 
 		auto root = std::make_unique<Node>( parent );
-		root->m_left = Parse( root.get( ), str.substr( 1, commaPosition - 1 ) );
-		root->m_right = Parse( root.get( ), str.substr( commaPosition + 1, str.size( ) - commaPosition - 2 ) );
+		root->m_left = Parse( str.substr( 1, commaPosition - 1 ), root.get( ) );
+		root->m_right = Parse( str.substr( commaPosition + 1, str.size( ) - commaPosition - 2 ), root.get( ) );
 		return root;
 	}
 

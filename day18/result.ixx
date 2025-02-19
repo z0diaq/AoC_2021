@@ -14,12 +14,7 @@ export namespace snailfish
 {
 	class Result : public AoC::Result
 	{
-
-	public:
-		Result();
-
 	protected:
-		virtual void Init() override;
 
 		virtual void ProcessOne( const std::string& data ) override;
 		virtual std::string FinishPartOne( ) override;
@@ -30,7 +25,6 @@ export namespace snailfish
 		virtual void Teardown() override;
 
 	private:
-		//data
 		std::vector<std::string> m_numbers;
 	};
 }
