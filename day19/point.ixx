@@ -12,6 +12,8 @@ export namespace beacon_scanner
 	struct Point {
 		Coords m_coords;
 
+		auto operator<=>( const Point& ) const = default;
+
 		constexpr Point operator+( const Point& other ) const {
 			return Point{ std::array{
 				m_coords[ 0 ] + other.m_coords[ 0 ],

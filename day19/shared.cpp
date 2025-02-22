@@ -6,6 +6,7 @@ import beacon_scanner;
 #include <algorithm>
 #include <stdexcept>
 #include <optional>
+#include <unordered_set>
 
 //containers
 #include <vector>
@@ -75,5 +76,43 @@ FindMatch( const Scanner& scanner1, const Scanner& scanner2, size_t requiredMatc
 	}
 
 	return std::nullopt;
+}
+
+size_t CountUniqueBeacons( const std::vector<Scanner>& scanners )
+{
+	std::unordered_set<Point, PointHash> uniqueBeacons;
+	std::vector<bool> aligned( scanners.size( ), false );
+	std::vector<Point> scannerPositions;
+	aligned[ 0 ] = true;
+
+	const auto& first_points = scanners[ 0 ].GetPoints( );
+	uniqueBeacons.insert( first_points.begin( ), first_points.end( ) );
+	scannerPositions.push_back( Point{ {0,0,0} } );
+
+	// Keep trying to align scanners until all are aligned
+	while( std::ranges::find( aligned, false ) != aligned.end( ) )
+	{
+		for( size_t i = 0; i < scanners.size( ); ++i )
+		{
+			if( !aligned[ i ] )
+			{
+				for( size_t j = 0; j < scanners.size( ); ++j )
+				{
+					if( aligned[ j ] )
+					{
+						if( auto match = FindMatch( scanners[ j ], scanners[ i ] ) )
+						{
+							aligned[ i ] = true;
+							scannerPositions.push_back( match->first );
+							uniqueBeacons.insert( match->second.begin( ), match->second.end( ) );
+							break;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return uniqueBeacons.size( );
 }
 
