@@ -1,6 +1,7 @@
 module;
 
 #include <array>
+#include <vector>
 
 export module beacon_scanner:point;
 
@@ -30,13 +31,18 @@ export namespace beacon_scanner
 			} };
 		}
 
-		constexpr Point ApplyRotation( const Matrix& matrix ) const
+		std::vector<Coords> GenerateRotation( ) const
 		{
-			return Point{ std::array{
-				matrix[ 0 ][ 0 ] * m_coords[ 0 ] + matrix[ 0 ][ 1 ] * m_coords[ 1 ] + matrix[ 0 ][ 2 ] * m_coords[ 2 ],
-				matrix[ 1 ][ 0 ] * m_coords[ 0 ] + matrix[ 1 ][ 1 ] * m_coords[ 1 ] + matrix[ 1 ][ 2 ] * m_coords[ 2 ],
-				matrix[ 2 ][ 0 ] * m_coords[ 0 ] + matrix[ 2 ][ 1 ] * m_coords[ 1 ] + matrix[ 2 ][ 2 ] * m_coords[ 2 ]
-			} };
+
+			const auto [x, y, z] = m_coords;
+			return std::vector<Coords>{
+				{x, y, z}, {x, -z, y}, {x, -y, -z}, {x, z, -y},
+				{-x, -y, z}, {-x, -z, -y}, {-x, y, -z}, {-x, z, y},
+				{y, z, x}, {y, -x, z}, {y, -z, -x}, {y, x, -z},
+				{-y, -z, x}, {-y, -x, -z}, {-y, z, -x}, {-y, x, z},
+				{z, x, y}, {z, -y, x}, {z, -x, -y}, {z, y, -x},
+				{-z, -x, y}, {-z, -y, -x}, {-z, x, -y}, {-z, y, x}
+			};
 		}
 	};
 

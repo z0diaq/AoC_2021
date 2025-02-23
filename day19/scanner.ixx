@@ -15,8 +15,6 @@ export namespace beacon_scanner
 	private:
 		std::vector<Point> m_points;
 
-		std::vector<Matrix> GetAllRotationMatrices( ) const;
-
 	public:
 		void AddPoint( Point&& point )
 		{

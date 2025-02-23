@@ -23,6 +23,8 @@ import beacon_scanner;
 
 using namespace beacon_scanner;
 
+size_t CountUniqueBeacons( const std::vector<Scanner>& scanners );
+
 Point ParsePoint( const std::string& line );
 
 void
@@ -37,7 +39,7 @@ Result::ProcessOne( const std::string& data )
 std::string
 Result::FinishPartOne( )
 {
-	return std::to_string( 0 );
+	return std::to_string( CountUniqueBeacons( m_scanners ) );
 }
 
 Point ParsePoint( const std::string& line )
