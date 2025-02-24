@@ -24,24 +24,10 @@ export namespace beacon_scanner
 		std::vector<std::vector<Point>> GetAllRotations( ) const
 		{
 			std::vector<std::vector<Point>> rotations;
-			rotations.reserve( 24 );
+			rotations.reserve( m_points.size( ) );
 
-			for( const auto& rotation : GetAllRotationMatrices( ) )
-			{
-				std::vector<Point> rotated;
-				rotated.reserve( m_points.size( ) );
-
-				std::ranges::transform(
-					m_points,
-					std::back_inserter( rotated ),
-					[&rotation]( const Point& point )
-					{
-						return point.ApplyRotation( rotation );
-					}
-				);
-
-				rotations.push_back( std::move( rotated ) );
-			}
+			for( const auto& point : m_points )
+				rotations.push_back( point.GenerateRotations( ) );
 
 			return rotations;
 		}

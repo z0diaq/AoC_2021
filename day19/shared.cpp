@@ -43,31 +43,35 @@ Result::Teardown( )
 
 
 std::optional<std::pair<Point, std::vector<Point>>>
-FindMatch( const Scanner& scanner1, const Scanner& scanner2, size_t requiredMatches = 12 )
+FindMatch( const Scanner& scanner1, const Scanner& scanner2, const size_t requiredMatches = 12 )
 {
-	const auto& points1 = scanner1.GetPoints( );
+	const auto& points1{ scanner1.GetPoints( ) };
+	std::unordered_set<Point, PointHash> pointSet1( points1.begin( ), points1.end( ) );
 
-	// Try each rotation of scanner2
-	for( const auto& rotated_points2 : scanner2.GetAllRotations( ) )
+	// list of points with all rotations
+	const auto& rotatedPoints2{ scanner2.GetAllRotations( ) };
+	for( size_t rotationNumber = 0; rotationNumber != 24; ++rotationNumber )
 	{
-		// Try each pair of points as potential matches
 		for( const auto& p1 : points1 )
 		{
-			for( const auto& p2 : rotated_points2 )
+			//try to find match for any point from not rotated scanner with those from rotated
+			for( size_t pointNo{ 0 }; pointNo != rotatedPoints2.size( ); ++pointNo )
 			{
 				// Calculate offset between these points
-				auto offset = p1 - p2;
+				const auto offset = p1 - rotatedPoints2[ pointNo ][ rotationNumber ];
 
 				// Transform all points of scanner2 by this offset
 				std::vector<Point> transformed;
-				std::ranges::transform( rotated_points2, std::back_inserter( transformed ),
-					[&offset]( const Point& p ) { return p + offset; } );
+				transformed.reserve( rotatedPoints2.size( ) );
+
+				std::ranges::transform( rotatedPoints2, std::back_inserter( transformed ),
+					[&offset, rotationNumber]( const std::vector<Point>& p ) { return p[ rotationNumber ] + offset; } );
 
 				// Count matches
-				size_t matches = std::ranges::count_if( transformed,
-					[&points1]( const Point& p ) {
-						return std::find( points1.begin( ), points1.end( ), p ) != points1.end( );
-					} );
+				size_t matches{ 0 };
+				for( const auto& transformedPoint : transformed )
+					if( pointSet1.count( transformedPoint ) )
+						++matches;
 
 				if( matches >= requiredMatches )
 					return std::make_pair( offset, transformed );

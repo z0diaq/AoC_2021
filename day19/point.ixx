@@ -31,11 +31,10 @@ export namespace beacon_scanner
 			} };
 		}
 
-		std::vector<Coords> GenerateRotation( ) const
+		std::vector<Point> GenerateRotations( ) const
 		{
-
 			const auto [x, y, z] = m_coords;
-			return std::vector<Coords>{
+			return std::vector<Point>{
 				{x, y, z}, {x, -z, y}, {x, -y, -z}, {x, z, -y},
 				{-x, -y, z}, {-x, -z, -y}, {-x, y, -z}, {-x, z, y},
 				{y, z, x}, {y, -x, z}, {y, -z, -x}, {y, x, -z},
