@@ -31,6 +31,11 @@ export namespace beacon_scanner
 			} };
 		}
 
+		constexpr bool operator<( const Point& other ) const
+		{
+			return std::tie( m_coords ) < std::tie( other.m_coords );
+		}
+
 		std::vector<Point> GenerateRotations( ) const
 		{
 			const auto [x, y, z] = m_coords;
@@ -49,9 +54,15 @@ export namespace beacon_scanner
 	{
 		size_t operator()( const Point& point ) const
 		{
-			return std::hash<int>( )( point.m_coords[ 0 ] ) ^
-				( std::hash<int>( )( point.m_coords[ 1 ] ) << 1 ) ^
-				( std::hash<int>( )( point.m_coords[ 2 ] ) << 2 );
+			size_t h1 = std::hash<int>( )( point.m_coords[ 0 ] );
+			size_t h2 = std::hash<int>( )( point.m_coords[ 1 ] );
+			size_t h3 = std::hash<int>( )( point.m_coords[ 2 ] );
+
+			// Use the boost hash_combine technique for better distribution
+			h1 ^= h2 + 0x9e3779b9 + ( h1 << 6 ) + ( h1 >> 2 );
+			h1 ^= h3 + 0x9e3779b9 + ( h1 << 6 ) + ( h1 >> 2 );
+
+			return h1;
 		}
 	};
 }

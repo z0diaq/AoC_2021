@@ -38,7 +38,7 @@ Result::Init( )
 void
 Result::Teardown( )
 {
-
+	m_scanners.clear( );
 }
 
 
@@ -57,24 +57,44 @@ FindMatch( const Scanner& scanner1, const Scanner& scanner2, const size_t requir
 			//try to find match for any point from not rotated scanner with those from rotated
 			for( size_t pointNo{ 0 }; pointNo != rotatedPoints2.size( ); ++pointNo )
 			{
-				// Calculate offset between these points
 				const auto offset = p1 - rotatedPoints2[ pointNo ][ rotationNumber ];
 
-				// Transform all points of scanner2 by this offset
+				// Transform all points of scanner2
 				std::vector<Point> transformed;
 				transformed.reserve( rotatedPoints2.size( ) );
 
 				std::ranges::transform( rotatedPoints2, std::back_inserter( transformed ),
-					[&offset, rotationNumber]( const std::vector<Point>& p ) { return p[ rotationNumber ] + offset; } );
+					[&offset, rotationNumber]( const std::vector<Point>& p )
+					{
+						return p[ rotationNumber ] + offset;
+					}
+				);
 
 				// Count matches
 				size_t matches{ 0 };
+				std::vector<Point> matchingPoints;
+
 				for( const auto& transformedPoint : transformed )
+				{
 					if( pointSet1.count( transformedPoint ) )
+					{
 						++matches;
+						matchingPoints.push_back( transformedPoint );
+					}
+				}
 
 				if( matches >= requiredMatches )
-					return std::make_pair( offset, transformed );
+				{
+					// Only return points that don't overlap
+					std::vector<Point> nonOverlappingPoints;
+					for( const auto& p : transformed )
+					{
+						if( pointSet1.count( p ) == 0 )
+							nonOverlappingPoints.push_back( p );
+					}
+
+					return std::make_pair( offset, nonOverlappingPoints );  // Only return non-overlapping points!
+				}
 			}
 		}
 	}
@@ -108,7 +128,11 @@ size_t CountUniqueBeacons( const std::vector<Scanner>& scanners )
 						{
 							aligned[ i ] = true;
 							scannerPositions.push_back( match->first );
+
+							size_t beforeSize = uniqueBeacons.size( );
 							uniqueBeacons.insert( match->second.begin( ), match->second.end( ) );
+							size_t afterSize = uniqueBeacons.size( );
+
 							break;
 						}
 					}
@@ -119,4 +143,3 @@ size_t CountUniqueBeacons( const std::vector<Scanner>& scanners )
 
 	return uniqueBeacons.size( );
 }
-
