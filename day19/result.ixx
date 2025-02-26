@@ -13,13 +13,7 @@ export namespace beacon_scanner
 {
 	class Result : public AoC::Result
 	{
-
-	public:
-		Result();
-
 	protected:
-		virtual void Init() override;
-
 		virtual void ProcessOne( const std::string& data ) override;
 		virtual std::string FinishPartOne( ) override;
 
@@ -31,5 +25,8 @@ export namespace beacon_scanner
 	private:
 		//data
 		std::vector<Scanner> m_scanners;
+
+		std::pair<size_t, std::vector<Point>>
+		CountUniqueBeaconsWithScannerPositions( ) const;
 	};
 }

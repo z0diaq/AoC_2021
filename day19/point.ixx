@@ -10,12 +10,30 @@ export namespace beacon_scanner
 	using Coords = std::array<int, 3>;
 	using Matrix = std::array<Coords, 3>;
 
-	struct Point {
+	struct Point
+	{
 		Coords m_coords;
 
-		auto operator<=>( const Point& ) const = default;
+		bool operator==( const Point& other ) const
+		{
+			return m_coords[ 0 ] == other.m_coords[ 0 ] &&
+				m_coords[ 1 ] == other.m_coords[ 1 ] &&
+				m_coords[ 2 ] == other.m_coords[ 2 ];
+		}
 
-		constexpr Point operator+( const Point& other ) const {
+		bool operator!=( const Point& other ) const
+		{
+			return !( *this == other );
+		}
+
+		bool operator<( const Point& other ) const
+		{
+			return std::tie( m_coords[ 0 ], m_coords[ 1 ], m_coords[ 2 ] ) <
+				std::tie( other.m_coords[ 0 ], other.m_coords[ 1 ], other.m_coords[ 2 ] );
+		}
+
+		constexpr Point operator+( const Point& other ) const
+		{
 			return Point{ std::array{
 				m_coords[ 0 ] + other.m_coords[ 0 ],
 				m_coords[ 1 ] + other.m_coords[ 1 ],
@@ -23,17 +41,13 @@ export namespace beacon_scanner
 			} };
 		}
 
-		constexpr Point operator-( const Point& other ) const {
+		constexpr Point operator-( const Point& other ) const
+		{
 			return Point{ std::array{
 				m_coords[ 0 ] - other.m_coords[ 0 ],
 				m_coords[ 1 ] - other.m_coords[ 1 ],
 				m_coords[ 2 ] - other.m_coords[ 2 ]
 			} };
-		}
-
-		constexpr bool operator<( const Point& other ) const
-		{
-			return std::tie( m_coords ) < std::tie( other.m_coords );
 		}
 
 		std::vector<Point> GenerateRotations( ) const
@@ -58,7 +72,7 @@ export namespace beacon_scanner
 			size_t h2 = std::hash<int>( )( point.m_coords[ 1 ] );
 			size_t h3 = std::hash<int>( )( point.m_coords[ 2 ] );
 
-			// Use the boost hash_combine technique for better distribution
+			// Use the boost hash_combine technique for distribution
 			h1 ^= h2 + 0x9e3779b9 + ( h1 << 6 ) + ( h1 >> 2 );
 			h1 ^= h3 + 0x9e3779b9 + ( h1 << 6 ) + ( h1 >> 2 );
 

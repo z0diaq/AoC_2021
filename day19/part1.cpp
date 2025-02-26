@@ -1,29 +1,15 @@
 import beacon_scanner;
 
-//leave what is needed
-#include <iostream>
 #include <string>
-#include <algorithm>
+#include <string_view>
+#include <array>
+#include <vector>
+
 #include <stdexcept>
 #include <ranges>
-#include <string_view>
-
-//containers
-#include <vector>
-#include <map>
-#include <set>
-#include <deque>
-#include <array>
-
-//boost
-#include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string/classification.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/algorithm/string/replace.hpp>
+#include <algorithm>
 
 using namespace beacon_scanner;
-
-size_t CountUniqueBeacons( const std::vector<Scanner>& scanners );
 
 Point ParsePoint( const std::string& line );
 
@@ -39,33 +25,27 @@ Result::ProcessOne( const std::string& data )
 std::string
 Result::FinishPartOne( )
 {
-	return std::to_string( CountUniqueBeacons( m_scanners ) );
+	return std::to_string( CountUniqueBeaconsWithScannerPositions( ).first );
 }
 
-Point ParsePoint( const std::string& line )
+Point
+ParsePoint( const std::string& line )
 {
-	std::deque<std::string> tokens;
+	// Create a view of tokens split by commas
+	auto tokens = line | std::views::split( ',' )
+	                   | std::views::transform( [ ]( auto&& rng )
+		{
+			return std::string_view( &*rng.begin( ), std::ranges::distance( rng ) );
+		} );
 
-	boost::split(
-		tokens,
-		line,
-		boost::is_any_of( "," ),
-		boost::token_compress_on );
-
-	if( tokens.size( ) != 3 )
-		throw std::logic_error( "No a valid Point!" );
+	// Validate token count
+	if( std::ranges::distance( tokens ) != 3 )
+		throw std::logic_error( "Not a valid Point!" );
 
 	Point result;
-	std::transform(
-		tokens.begin( ),
-		tokens.end( ),
-		result.m_coords.begin( ),
-		[ ]( const std::string& token ) -> int
+	std::ranges::transform( tokens, result.m_coords.begin( ), [ ]( const auto& token ) -> int
 		{
-			return (int)std::strtol(
-				token.c_str( ),
-				nullptr/*ignore*/,
-				0/*auto detect*/ );
+			return std::stoi( std::string( token ) );
 		} );
 
 	return result;

@@ -138,11 +138,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="manhattanDistanceUnitTests.cpp" />
+    <ClCompile Include="parsePointUnitTests.cpp" />
     <ClCompile Include="part1.cpp" />
     <ClCompile Include="part2.cpp" />
     <ClCompile Include="point.ixx" />
+    <ClCompile Include="pointUnitTests.cpp" />
     <ClCompile Include="result.ixx" />
     <ClCompile Include="scanner.ixx" />
+    <ClCompile Include="scannerMatchingUnitTests.cpp" />
+    <ClCompile Include="scannerUnitTests.cpp" />
     <ClCompile Include="shared.cpp" />
   </ItemGroup>
   <ItemGroup>
