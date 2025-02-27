@@ -17,10 +17,6 @@ export namespace extended_polymerization
 
 	class Result : public AoC::Result
 	{
-
-	public:
-		Result();
-
 	protected:
 
 		virtual void ProcessOne( const std::string& data ) override;

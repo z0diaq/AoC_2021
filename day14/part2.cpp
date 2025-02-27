@@ -6,8 +6,6 @@ import extended_polymerization;
 #include <map>
 #include <array>
 
-#include <iostream>
-
 using namespace extended_polymerization;
 
 void
@@ -16,16 +14,12 @@ Result::ProcessTwo(const std::string& data)
 	if( m_template.empty( ) )
 		std::copy( data.begin( ), data.end( ), std::back_inserter( m_template ) );
 	else if( data.length( ) == 7 )
-	{
-		std::cout << "processed " << data << std::endl;
 		m_pairInsertionRules[ { data[ 0 ], data[ 1 ] } ] = data[ 6 ];
-	}
 }
 
 using PolymerPairMap = std::map<CharPair, std::uint64_t>;
 
-template<typename ItemType>
-void PushNewPairOrIncrementExisting( std::map<ItemType, std::uint64_t>& _map, const ItemType& _item, const std::uint64_t _count = 1 )
+void PushNewPairOrIncrementExisting( PolymerPairMap& _map, const CharPair& _item, const std::uint64_t _count = 1 )
 {
 	auto insertResult = _map.insert( { _item, _count } );
 	if( false == insertResult.second )
@@ -38,17 +32,12 @@ Result::FinishPartTwo()
 	std::map<char, std::uint64_t> occurrances{};
 
 	PolymerPairMap polymer;
+	for( auto it = m_template.begin( ); std::next( it ) != m_template.end( ); ++it )
 	{
-		auto prevIt = m_template.begin( );
-		++occurrances[ *prevIt ];
-		auto currentIt = ++prevIt;
-		while( currentIt != m_template.end( ) )
-		{
-			++occurrances[ *currentIt ];
-			PushNewPairOrIncrementExisting( polymer, { *prevIt, *currentIt } );
-			prevIt = currentIt++;
-		}
+		++occurrances[ *it ];
+		PushNewPairOrIncrementExisting( polymer, { *it, *std::next( it ) } );
 	}
+	++occurrances[ m_template.back( ) ];
 
 	for( size_t iterations = 0; iterations != 40; ++iterations )
 	{
@@ -68,9 +57,7 @@ Result::FinishPartTwo()
 				occurrances[ charToInsert ] += count;
 			}
 			else
-			{
 				PushNewPairOrIncrementExisting( newPolymer, pair, count );
-			}
 		}
 		polymer.swap( newPolymer );
 	}
