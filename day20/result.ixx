@@ -51,5 +51,7 @@ export namespace trench_map
 		// temp during processing;
 		bool m_inImage;
 		int m_scanLineNumber;
+
+		
 	};
 }
