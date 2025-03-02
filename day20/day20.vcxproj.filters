@@ -33,6 +33,9 @@
     <ClCompile Include="shared.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="utilsUnitTests.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="sample_input_a.txt">
