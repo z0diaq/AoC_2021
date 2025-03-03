@@ -74,8 +74,8 @@ ProcessNextScanLine( LitPixelsSet& _litPixelsSet, const std::string& _data, int 
 			_litPixelsSet.emplace( Pixel{ x, _scanLineNumber } );
 }
 
-//auto area3x3 = [&_image, &_bounds, _infiniteIsLit]( int _column, int _row ) -> unsigned long
-unsigned long Area3x3( const LitPixelsSet& _image, const std::string& _algorithm, const Bounds& _bounds, const bool _isInfiniteLit, const int _column, const int _row )
+unsigned long
+Area3x3( const LitPixelsSet& _image, const std::string& _algorithm, const Bounds& _bounds, const bool _isInfiniteLit, const int _column, const int _row )
 {
 	std::bitset<9> areaBits{};
 	size_t bitNum{ 8 }; // Start with most significant bit
@@ -113,9 +113,9 @@ EnhanceImage( const LitPixelsSet& _image, const std::string& _algorithm, Bounds 
 	static bool firstRow{ true };
 
 	// Process enhancement
-	for( int row = _bounds[ MIN_Y ]; row < _bounds[ MAX_Y ]; ++row )
+	for( int row{ _bounds[ MIN_Y ] }; row < _bounds[ MAX_Y ]; ++row )
 	{
-		for( int column = _bounds[ MIN_X ]; column < _bounds[ MAX_X ]; ++column )
+		for( int column{ _bounds[ MIN_X ] }; column < _bounds[ MAX_X ]; ++column )
 		{
 			const auto indexFromArea = Area3x3( _image, _algorithm, _bounds, _infiniteIsLit, column, row );
 			const bool markLit{ ( _algorithm[ indexFromArea ] == '#' ) };
@@ -136,7 +136,8 @@ EnhanceImage( const LitPixelsSet& _image, const std::string& _algorithm, Bounds 
 	return { result, _bounds };
 }
 
-void DumpImage( const LitPixelsSet& _image, const Bounds& _bounds )
+void
+DumpImage( const LitPixelsSet& _image, const Bounds& _bounds )
 {
 	for( int row{ _bounds[ MIN_Y ] }; row != _bounds[ MAX_Y ]; ++row )
 	{
