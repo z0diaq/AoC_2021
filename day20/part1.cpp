@@ -46,7 +46,7 @@ Result::ProcessOne( const std::string& data )
 }
 
 std::pair<LitPixelsSet, Bounds>
-EnhanceImage( const LitPixelsSet& _image, const std::string& _algorithm, Bounds _bounds, bool& _infiniteIsLit );
+EnhanceImage( const LitPixelsSet& _image, const std::string& _algorithm, bool& _infiniteIsLit );
 
 void DumpImage( const LitPixelsSet& _image, const Bounds& _bounds );
 
@@ -55,11 +55,11 @@ Result::FinishPartOne( )
 {
 	bool infiniteIsLit{ false };
 
-	auto [newImage, newBounds] = EnhanceImage( m_litPixelsSet, m_enhanceAlgorithm, m_bounds, infiniteIsLit );
+	auto [newImage, newBounds] = EnhanceImage( m_litPixelsSet, m_enhanceAlgorithm, infiniteIsLit );
 	std::cout << "\tAfter 1st enhancement:" << std::endl;
 	DumpImage( newImage, newBounds );
 
-	auto [finalImage, finalBounds] = EnhanceImage( newImage, m_enhanceAlgorithm, newBounds, infiniteIsLit );
+	auto [finalImage, finalBounds] = EnhanceImage( newImage, m_enhanceAlgorithm, infiniteIsLit );
 	std::cout << "\tAfter 2nd enhancement:" << std::endl;
 	DumpImage( finalImage, finalBounds );
 
@@ -100,24 +100,36 @@ Area3x3( const LitPixelsSet& _image, const std::string& _algorithm, const Bounds
 }
 
 std::pair<LitPixelsSet, Bounds>
-EnhanceImage( const LitPixelsSet& _image, const std::string& _algorithm, Bounds _bounds, bool& _infiniteIsLit )
+EnhanceImage( const LitPixelsSet& _image, const std::string& _algorithm, bool& _infiniteIsLit )
 {
+	Bounds bounds;
+	bounds[ MIN_X ] = bounds[ MAX_X ] = _image.begin( )->first;
+	bounds[ MIN_Y ] = bounds[ MAX_Y ] = _image.begin( )->second;
+	for( const auto& pt : _image )
+	{
+		bounds[ MIN_X ] = std::min( bounds[ MIN_X ], pt.first );
+		bounds[ MIN_Y ] = std::min( bounds[ MIN_Y ], pt.second );
+		bounds[ MAX_X ] = std::max( bounds[ MAX_X ], pt.first );
+		bounds[ MAX_Y ] = std::max( bounds[ MAX_Y ], pt.second );
+	}
+
+
 	// Expand bounds
-	--_bounds[ MIN_X ];
-	--_bounds[ MIN_Y ];
-	++_bounds[ MAX_X ];
-	++_bounds[ MAX_Y ];
+	--bounds[ MIN_X ];
+	--bounds[ MIN_Y ];
+	++bounds[ MAX_X ];
+	++bounds[ MAX_Y ];
 
 	LitPixelsSet result{};
 
 	static bool firstRow{ true };
 
 	// Process enhancement
-	for( int row{ _bounds[ MIN_Y ] }; row < _bounds[ MAX_Y ]; ++row )
+	for( int row{ bounds[ MIN_Y ] }; row <= bounds[ MAX_Y ]; ++row )
 	{
-		for( int column{ _bounds[ MIN_X ] }; column < _bounds[ MAX_X ]; ++column )
+		for( int column{ bounds[ MIN_X ] }; column <= bounds[ MAX_X ]; ++column )
 		{
-			const auto indexFromArea = Area3x3( _image, _algorithm, _bounds, _infiniteIsLit, column, row );
+			const auto indexFromArea = Area3x3( _image, _algorithm, bounds, _infiniteIsLit, column, row );
 			const bool markLit{ ( _algorithm[ indexFromArea ] == '#' ) };
 			if( markLit )
 				result.insert( { column, row } );
@@ -133,7 +145,7 @@ EnhanceImage( const LitPixelsSet& _image, const std::string& _algorithm, Bounds 
 	else
 		_infiniteIsLit = ( _algorithm[ 511 ] == '#' );
 
-	return { result, _bounds };
+	return { result, bounds };
 }
 
 void
