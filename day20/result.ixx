@@ -18,16 +18,17 @@ export namespace trench_map
 		}
 	};
 
+	struct Bounds
+	{
+		int m_minX{};
+		int m_maxX{};
+		int m_minY{};
+		int m_maxY{};
+	};
+
 	using Pixel = std::pair<int, int>;
 	using LitPixelsSet = std::unordered_set<Pixel, PairHash>;
-	using Bounds = std::array<int, 4>;
-
-	constexpr size_t MIN_X{ 0 };
-	constexpr size_t MAX_X{ 1 };
-	constexpr size_t MIN_Y{ 2 };
-	constexpr size_t MAX_Y{ 3 };
-
-
+	
 	class Result : public AoC::Result
 	{
 
@@ -51,7 +52,5 @@ export namespace trench_map
 		// temp during processing;
 		bool m_inImage;
 		int m_scanLineNumber;
-
-		
 	};
 }

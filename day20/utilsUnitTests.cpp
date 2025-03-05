@@ -49,10 +49,10 @@ protected:
 		litPixels = createImage( exampleImage );
 
 		// Set bounds (example image is 5x5)
-		bounds[ MIN_X ] = 0;
-		bounds[ MAX_X ] = 5;
-		bounds[ MIN_Y ] = 0;
-		bounds[ MAX_Y ] = 5;
+		bounds.m_minX = 0;
+		bounds.m_maxX = 5;
+		bounds.m_minY = 0;
+		bounds.m_maxY = 5;
 
 		// Example enhancement algorithm (first 20 chars shown)
 		algorithm =
