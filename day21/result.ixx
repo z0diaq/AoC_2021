@@ -3,19 +3,14 @@ module;
 #include <string>
 #include <array>
 
+#include "playerInfo.h"
+
 export module dirac_dice;
 
 import AoC;
 
 export namespace dirac_dice
 {
-	struct PlayerInfo
-	{
-		std::uint32_t m_position;
-		std::uint32_t m_score;
-	};
-
-
 	class Result : public AoC::Result
 	{
 

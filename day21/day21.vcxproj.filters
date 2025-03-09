@@ -33,6 +33,9 @@
     <ClCompile Include="shared.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="gameState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="sample_input_a.txt">
@@ -44,5 +47,13 @@
     <Text Include="sample_input_a_result_part2.txt">
       <Filter>data</Filter>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="gameState.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="playerInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

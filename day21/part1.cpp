@@ -77,8 +77,6 @@ Result::FinishPartOne( )
 		m_timesDiceRolled += 3;
 		m_players[ playerNum ].m_position = WrapPosition( m_players[ playerNum ].m_position );
 		m_players[ playerNum ].m_score += m_players[ playerNum ].m_position;
-		std::cout << "Player " << playerNum + 1 << " pos: " << m_players[ playerNum ].m_position << ", score: " << m_players[ playerNum ].m_score << std::endl;
-		std::cout << " dice at: " << m_lastDiceResult << std::endl;
 		if( m_players[ playerNum ].m_score >= 1000 )
 			break;
 		playerNum = ( playerNum + 1 ) % 2;
