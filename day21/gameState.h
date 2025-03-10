@@ -65,7 +65,7 @@ namespace dirac_dice
 			{
 				const std::uint32_t newPlayer2Position{ WrapPosition( m_player2.m_position + _diceSum ) };
 				const std::uint32_t newPlayer2Score{ m_player2.m_score + newPlayer2Position };
-				return GameState( m_player1, PlayerInfo{ newPlayer2Position, newPlayer2Score }, false );
+				return GameState( m_player1, PlayerInfo{ newPlayer2Position, newPlayer2Score }, true );
 			}
 		}
 
