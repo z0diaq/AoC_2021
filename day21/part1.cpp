@@ -1,25 +1,16 @@
 import dirac_dice;
 
 //leave what is needed
-#include <iostream>
 #include <string>
-#include <algorithm>
 #include <stdexcept>
 
-//containers
-#include <vector>
-#include <map>
-#include <set>
-#include <deque>
-#include <array>
-
-//boost
-#include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string/classification.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/algorithm/string/replace.hpp>
-
 using namespace dirac_dice;
+
+namespace dirac_dice
+{
+	std::uint32_t
+	WrapPosition( std::uint32_t _position );
+}
 
 void
 Result::ProcessOne( const std::string& data )
@@ -44,7 +35,8 @@ Result::ProcessOne( const std::string& data )
 	}
 }
 
-std::uint32_t RollDice3Times( std::uint32_t& _currentDiceResult )
+std::uint32_t
+RollDice3Times( std::uint32_t& _currentDiceResult )
 {
 	std::uint32_t result{ 0 };
 	
@@ -58,7 +50,7 @@ std::uint32_t RollDice3Times( std::uint32_t& _currentDiceResult )
 }
 
 std::uint32_t
-WrapPosition( std::uint32_t _position )
+dirac_dice::WrapPosition( std::uint32_t _position )
 {
 	_position = _position % 10;
 	if( _position == 0 )

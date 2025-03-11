@@ -13,10 +13,6 @@ export namespace dirac_dice
 {
 	class Result : public AoC::Result
 	{
-
-	public:
-		Result();
-
 	protected:
 		virtual void Init() override;
 
@@ -25,8 +21,6 @@ export namespace dirac_dice
 
 		virtual void ProcessTwo( const std::string& data ) override;
 		virtual std::string FinishPartTwo( ) override;
-
-		virtual void Teardown() override;
 
 	private:
 		//data
