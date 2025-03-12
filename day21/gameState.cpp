@@ -5,7 +5,6 @@ using dirac_dice::GameState;
 using dirac_dice::PlayerInfo;
 using dirac_dice::Wins;
 
-
 GameState::GameState( const PlayerInfo& _player1, const PlayerInfo& _player2, const bool _isPlayer1Turn ) :
 	m_player1( _player1 ), m_player2( _player2 ), m_isPlayer1Turn( _isPlayer1Turn )
 {
@@ -62,13 +61,3 @@ GameState::operator==( const GameState& _rhs ) const
 {
 	return std::tie( m_player1, m_player2, m_isPlayer1Turn ) == std::tie( _rhs.m_player1, _rhs.m_player2, _rhs.m_isPlayer1Turn );
 }
-
-
-
-
-
-
-
-
-
-
