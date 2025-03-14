@@ -29,11 +29,10 @@ Result::Result()
 void
 Result::Init()
 {
-
 }
 
 void
 Result::Teardown()
 {
-
+	m_commands.clear( );
 }
