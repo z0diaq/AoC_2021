@@ -137,9 +137,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="cuboid.cpp" />
+    <ClCompile Include="cuboid.ixx" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="part1.cpp" />
     <ClCompile Include="part2.cpp" />
+    <ClCompile Include="range.cpp" />
+    <ClCompile Include="range.ixx" />
     <ClCompile Include="result.ixx" />
     <ClCompile Include="shared.cpp" />
   </ItemGroup>
@@ -155,6 +159,9 @@
     <Text Include="sample_input_b.txt" />
     <Text Include="sample_input_b_result_part1.txt" />
     <Text Include="sample_input_b_result_part2.txt" />
+    <Text Include="sample_input_d.txt" />
+    <Text Include="sample_input_d_result_part1.txt" />
+    <Text Include="sample_input_d_result_part2.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

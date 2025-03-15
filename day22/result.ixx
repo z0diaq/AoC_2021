@@ -2,8 +2,12 @@ module;
 
 #include <string>
 #include <array>
+#include <optional>
 
 export module reactor_reboot;
+
+export import :cuboid;
+export import :range;
 
 import AoC;
 
@@ -12,12 +16,6 @@ export namespace reactor_reboot
 	constexpr size_t X{ 0 };
 	constexpr size_t Y{ 1 };
 	constexpr size_t Z{ 2 };
-
-	struct Range
-	{
-		const int m_min;
-		const int m_max;
-	};
 
 	struct Command
 	{

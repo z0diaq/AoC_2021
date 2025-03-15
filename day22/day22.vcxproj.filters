@@ -33,6 +33,18 @@
     <ClCompile Include="shared.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cuboid.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="range.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cuboid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="range.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="sample_input_a.txt">
@@ -51,6 +63,15 @@
       <Filter>data</Filter>
     </Text>
     <Text Include="sample_input_b_result_part2.txt">
+      <Filter>data</Filter>
+    </Text>
+    <Text Include="sample_input_d.txt">
+      <Filter>data</Filter>
+    </Text>
+    <Text Include="sample_input_d_result_part1.txt">
+      <Filter>data</Filter>
+    </Text>
+    <Text Include="sample_input_d_result_part2.txt">
       <Filter>data</Filter>
     </Text>
   </ItemGroup>

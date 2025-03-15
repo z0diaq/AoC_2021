@@ -22,8 +22,9 @@ import reactor_reboot;
 using namespace reactor_reboot;
 
 void
-Result::ProcessTwo(const std::string& data)
+Result::ProcessTwo(const std::string& _data)
 {
+	ProcessOne( _data );
 }
 
 std::string

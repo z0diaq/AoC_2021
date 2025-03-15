@@ -56,7 +56,7 @@ Result::FinishPartOne( )
 	return std::to_string( activatedPoints.size( ) );
 }
 
-Range
+[[nodiscard]] Range
 TrimRange( Range _range )
 {
 	if( _range.m_min > 50 || _range.m_max < -50 )
@@ -64,7 +64,7 @@ TrimRange( Range _range )
 	return Range{ std::max( _range.m_min, -50 ), std::min( _range.m_max, 51 ) };
 }
 
-bool
+[[nodiscard]] bool
 IsEmptyRange( const Range& _range )
 {
 	return _range.m_min == _range.m_max;
