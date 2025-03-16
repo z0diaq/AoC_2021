@@ -1,15 +1,15 @@
 module;
 
-export module reactor_reboot:range;
+#include <optional>
 
-namespace std
-{
-	template<typename T>
-	class optional;
-}
+export module reactor_reboot:range;
 
 export namespace reactor_reboot
 {
+	constexpr size_t X{ 0 };
+	constexpr size_t Y{ 1 };
+	constexpr size_t Z{ 2 };
+
 	struct Range
 	{
 		const int m_min;

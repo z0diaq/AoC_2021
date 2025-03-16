@@ -12,6 +12,7 @@ import reactor_reboot;
 #include <set>
 #include <deque>
 #include <array>
+#include <functional>
 
 //boost
 #include <boost/algorithm/string/split.hpp>
@@ -22,13 +23,26 @@ import reactor_reboot;
 using namespace reactor_reboot;
 
 void
-Result::ProcessTwo(const std::string& _data)
+Result::ProcessTwo( const std::string& _data )
 {
 	ProcessOne( _data );
 }
 
 std::string
-Result::FinishPartTwo()
+Result::FinishPartTwo( )
 {
-	return std::to_string(0);
+	std::vector<Cuboid> onCuboids;
+	for( const Command& command : m_commands )
+	{
+		std::vector<Cuboid> newOnCuboids;
+
+		if( command.m_isOn )
+		{
+		}
+		else
+		{
+		}
+	}
+
+	return std::to_string( 0 );
 }

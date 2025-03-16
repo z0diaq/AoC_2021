@@ -2,26 +2,19 @@ module;
 
 #include <array>
 #include <vector>
+#include <optional>
 
 export module reactor_reboot:cuboid;
 
 import :range;
 
-namespace std
-{
-	template<typename T>
-	class optional;
-}
-
 export namespace reactor_reboot
 {
 	struct Cuboid
 	{
-		Range m_xRange;
-		Range m_yRange;
-		Range m_zRange;
+		std::array<Range, 3> m_ranges;
 
-		[[nodiscard]] int64_t
+		[[nodiscard]] size_t
 			volume( ) const;
 
 		[[nodiscard]] bool

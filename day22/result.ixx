@@ -2,7 +2,6 @@ module;
 
 #include <string>
 #include <array>
-#include <optional>
 
 export module reactor_reboot;
 
@@ -13,10 +12,6 @@ import AoC;
 
 export namespace reactor_reboot
 {
-	constexpr size_t X{ 0 };
-	constexpr size_t Y{ 1 };
-	constexpr size_t Z{ 2 };
-
 	struct Command
 	{
 		const bool m_isOn;
@@ -45,7 +40,6 @@ export namespace reactor_reboot
 	private:
 		//data
 		std::vector<Command> m_commands;
-		
 	};
 }
 
