@@ -1,6 +1,7 @@
 module;
 
 #include <optional>
+#include <tuple>
 
 module reactor_reboot:cuboid;
 
@@ -46,7 +47,7 @@ Cuboid::subtract( const Cuboid& other ) const
 	if( m_ranges[ X ].m_min < overlap->m_ranges[ X ].m_min )
 	{
 		result.push_back( Cuboid{
-			Range{m_ranges[ X ].m_min, overlap->m_ranges[ X ].m_min - 1},
+			Range{m_ranges[ X ].m_min, overlap->m_ranges[ X ].m_min},
 			m_ranges[ Y ],
 			m_ranges[ Z ]
 			} );
@@ -56,7 +57,7 @@ Cuboid::subtract( const Cuboid& other ) const
 	if( m_ranges[ X ].m_max > overlap->m_ranges[ X ].m_max )
 	{
 		result.push_back( Cuboid{
-			Range{overlap->m_ranges[ X ].m_max + 1, m_ranges[ X ].m_max},
+			Range{overlap->m_ranges[ X ].m_max, m_ranges[ X ].m_max},
 			m_ranges[ Y ],
 			m_ranges[ Z ]
 			} );
@@ -67,7 +68,7 @@ Cuboid::subtract( const Cuboid& other ) const
 	{
 		result.push_back( Cuboid{
 			overlap->m_ranges[ X ],
-			Range{m_ranges[ Y ].m_min, overlap->m_ranges[ Y ].m_min - 1},
+			Range{m_ranges[ Y ].m_min, overlap->m_ranges[ Y ].m_min},
 			m_ranges[ Z ]
 			} );
 	}
@@ -77,7 +78,7 @@ Cuboid::subtract( const Cuboid& other ) const
 	{
 		result.push_back( Cuboid{
 			overlap->m_ranges[ X ],
-			Range{overlap->m_ranges[ Y ].m_max + 1, m_ranges[ Y ].m_max},
+			Range{overlap->m_ranges[ Y ].m_max, m_ranges[ Y ].m_max},
 			m_ranges[ Z ]
 			} );
 	}
@@ -88,7 +89,7 @@ Cuboid::subtract( const Cuboid& other ) const
 		result.push_back( Cuboid{
 			overlap->m_ranges[ X ],
 			overlap->m_ranges[ Y ],
-			Range{m_ranges[ Z ].m_min, overlap->m_ranges[ Z ].m_min - 1}
+			Range{m_ranges[ Z ].m_min, overlap->m_ranges[ Z ].m_min}
 			} );
 	}
 
@@ -98,9 +99,15 @@ Cuboid::subtract( const Cuboid& other ) const
 		result.push_back( Cuboid{
 			overlap->m_ranges[ X ],
 			overlap->m_ranges[ Y ],
-			Range{overlap->m_ranges[ Z ].m_max + 1, m_ranges[ Z ].m_max}
+			Range{overlap->m_ranges[ Z ].m_max, m_ranges[ Z ].m_max}
 			} );
 	}
 
 	return result;
+}
+
+[[nodiscard]] bool
+Cuboid::operator==( const Cuboid& _rhs ) const
+{
+	return std::tie( m_ranges[ X ], m_ranges[ Y ], m_ranges[ Z ] ) == std::tie( _rhs.m_ranges[ X ], _rhs.m_ranges[ Y ], _rhs.m_ranges[ Z ] );
 }

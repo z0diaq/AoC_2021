@@ -12,8 +12,10 @@ export namespace reactor_reboot
 
 	struct Range
 	{
-		const int m_min;
-		const int m_max;
+		int m_min;
+		int m_max;
+
+		//Range( const Range& _rhs ) = default;
 
 		[[nodiscard]] size_t
 		volume( ) const;
@@ -23,5 +25,7 @@ export namespace reactor_reboot
 
 		[[nodiscard]] std::optional<Range>
 		intersection( const Range& _other ) const;
+
+		[[nodiscard]] bool operator==( const Range& _rhs ) const;
 	};
 }

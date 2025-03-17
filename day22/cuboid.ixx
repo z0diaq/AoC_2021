@@ -25,5 +25,7 @@ export namespace reactor_reboot
 
 		[[nodiscard]] std::vector<Cuboid>
 			subtract( const Cuboid& other ) const;
+
+		[[nodiscard]] bool operator==( const Cuboid& _rhs ) const;
 	};
 }

@@ -19,6 +19,7 @@ import reactor_reboot;
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string/replace.hpp>
+#include <numeric>
 
 using namespace reactor_reboot;
 
@@ -38,11 +39,44 @@ Result::FinishPartTwo( )
 
 		if( command.m_isOn )
 		{
+			// Start with the entire cuboid
+			std::vector<Cuboid> toAdd{ Cuboid{ command.m_ranges } };
+
+			// Subtract all existing "on" cuboids to avoid double-counting
+			for( const auto& existing : onCuboids )
+			{
+				std::vector<Cuboid> remaining;
+
+				for( const auto& current : toAdd )
+				{
+					auto parts = current.subtract( existing );
+					remaining.insert( remaining.end( ), parts.begin( ), parts.end( ) );
+				}
+
+				toAdd = std::move( remaining );
+			}
+
+			// Add all existing cuboids and the new non-overlapping parts
+			newOnCuboids = onCuboids;
+			newOnCuboids.insert( newOnCuboids.end( ), toAdd.begin( ), toAdd.end( ) );
 		}
-		else
-		{
+		else {
+			// For each existing cuboid, subtract the "off" cuboid and keep the remaining parts
+			for( const auto& existing : onCuboids ) {
+				auto parts = existing.subtract( Cuboid{ command.m_ranges } );
+				newOnCuboids.insert( newOnCuboids.end( ), parts.begin( ), parts.end( ) );
+			}
 		}
+
+		onCuboids = std::move( newOnCuboids );
 	}
 
-	return std::to_string( 0 );
+	// Calculate the total volume of all "on" cuboids
+	const size_t onCount = std::transform_reduce(
+		onCuboids.begin( ), onCuboids.end( ),
+		size_t{ 0 },
+		std::plus<>( ),
+		[ ]( const Cuboid& c ) { return c.volume( ); }
+	);
+	return std::to_string( onCount );
 }
