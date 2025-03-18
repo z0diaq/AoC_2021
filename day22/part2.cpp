@@ -29,10 +29,14 @@ Result::ProcessTwo( const std::string& _data )
 	ProcessOne( _data );
 }
 
+std::vector<Cuboid>
+mergeCuboids( std::vector<Cuboid> cuboids );
+
 std::string
 Result::FinishPartTwo( )
 {
 	std::vector<Cuboid> onCuboids;
+	size_t commandNo{ 0 };
 	for( const Command& command : m_commands )
 	{
 		std::vector<Cuboid> newOnCuboids;
@@ -60,15 +64,18 @@ Result::FinishPartTwo( )
 			newOnCuboids = onCuboids;
 			newOnCuboids.insert( newOnCuboids.end( ), toAdd.begin( ), toAdd.end( ) );
 		}
-		else {
+		else
+		{
 			// For each existing cuboid, subtract the "off" cuboid and keep the remaining parts
-			for( const auto& existing : onCuboids ) {
+			for( const auto& existing : onCuboids )
+			{
 				auto parts = existing.subtract( Cuboid{ command.m_ranges } );
 				newOnCuboids.insert( newOnCuboids.end( ), parts.begin( ), parts.end( ) );
 			}
 		}
 
-		onCuboids = std::move( newOnCuboids );
+		onCuboids = mergeCuboids( newOnCuboids );
+		std::cout << "After command " << ++commandNo << " have " << onCuboids.size( ) << " cuboids..." << std::endl;
 	}
 
 	// Calculate the total volume of all "on" cuboids
@@ -79,4 +86,42 @@ Result::FinishPartTwo( )
 		[ ]( const Cuboid& c ) { return c.volume( ); }
 	);
 	return std::to_string( onCount );
+}
+
+std::vector<Cuboid>
+mergeCuboids( std::vector<Cuboid> cuboids )
+{
+	if( cuboids.empty( ) )
+		return cuboids;
+
+	bool didMerge = true;
+	while( didMerge )
+	{
+		didMerge = false;
+
+		// Iteratively try to merge pairs of cuboids
+		for( size_t i = 0; i < cuboids.size( ); ++i )
+		{
+			for( size_t j = i + 1; j < cuboids.size( ); ++j )
+			{
+				if( cuboids[ i ].canMergeWith( cuboids[ j ] ) )
+				{
+					// Merge the cuboids
+					Cuboid merged = cuboids[ i ].mergeWith( cuboids[ j ] );
+
+					// Replace the first cuboid with the merged result
+					cuboids[ i ] = merged;
+
+					// Remove the second cuboid
+					cuboids.erase( cuboids.begin( ) + j );
+
+					didMerge = true;
+					break; // Start over with the new set of cuboids
+				}
+			}
+			if( didMerge ) break;
+		}
+	}
+
+	return cuboids;
 }
