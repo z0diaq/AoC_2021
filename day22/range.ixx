@@ -15,8 +15,6 @@ export namespace reactor_reboot
 		int m_min;
 		int m_max;
 
-		//Range( const Range& _rhs ) = default;
-
 		[[nodiscard]] size_t
 		volume( ) const;
 

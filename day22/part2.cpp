@@ -1,24 +1,8 @@
 import reactor_reboot;
 
-//leave what is needed
-#include <iostream>
 #include <string>
-#include <algorithm>
-#include <stdexcept>
-
-//containers
 #include <vector>
-#include <map>
-#include <set>
-#include <deque>
-#include <array>
 #include <functional>
-
-//boost
-#include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string/classification.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/algorithm/string/replace.hpp>
 #include <numeric>
 
 using namespace reactor_reboot;
@@ -29,99 +13,56 @@ Result::ProcessTwo( const std::string& _data )
 	ProcessOne( _data );
 }
 
-std::vector<Cuboid>
-mergeCuboids( std::vector<Cuboid> cuboids );
+// uses Inclusion-exclusion principle
+// see https://en.wikipedia.org/wiki/Inclusion%E2%80%93exclusion_principle
+
+struct SignedCuboid
+{
+	Cuboid m_cuboid;
+	int64_t m_sign; // +1 for ON, -1 for adjustment cuboids
+
+	SignedCuboid( const Cuboid& _cuboid, int64_t _sign ) : m_cuboid( _cuboid ), m_sign( _sign ) { }
+};
 
 std::string
 Result::FinishPartTwo( )
 {
-	std::vector<Cuboid> onCuboids;
-	size_t commandNo{ 0 };
+	std::vector<SignedCuboid> signedCuboids;
+
 	for( const Command& command : m_commands )
 	{
-		std::vector<Cuboid> newOnCuboids;
+		Cuboid current{ command.m_ranges };
 
+		std::vector<SignedCuboid> newIntersections;
+
+		for( const auto& existing : signedCuboids )
+		{
+			auto intersection = current.intersection( existing.m_cuboid );
+			if( intersection )
+			{
+				// intersections with opposite sign implements inclusion-exclusion principle
+				newIntersections.emplace_back( *intersection, -existing.m_sign );
+			}
+		}
+
+		// For ON commands, add the cuboid to our calculation
 		if( command.m_isOn )
-		{
-			// Start with the entire cuboid
-			std::vector<Cuboid> toAdd{ Cuboid{ command.m_ranges } };
+			signedCuboids.emplace_back( current, 1 );
 
-			// Subtract all existing "on" cuboids to avoid double-counting
-			for( const auto& existing : onCuboids )
-			{
-				std::vector<Cuboid> remaining;
-
-				for( const auto& current : toAdd )
-				{
-					auto parts = current.subtract( existing );
-					remaining.insert( remaining.end( ), parts.begin( ), parts.end( ) );
-				}
-
-				toAdd = std::move( remaining );
-			}
-
-			// Add all existing cuboids and the new non-overlapping parts
-			newOnCuboids = onCuboids;
-			newOnCuboids.insert( newOnCuboids.end( ), toAdd.begin( ), toAdd.end( ) );
-		}
-		else
-		{
-			// For each existing cuboid, subtract the "off" cuboid and keep the remaining parts
-			for( const auto& existing : onCuboids )
-			{
-				auto parts = existing.subtract( Cuboid{ command.m_ranges } );
-				newOnCuboids.insert( newOnCuboids.end( ), parts.begin( ), parts.end( ) );
-			}
-		}
-
-		onCuboids = mergeCuboids( newOnCuboids );
-		std::cout << "After command " << ++commandNo << " have " << onCuboids.size( ) << " cuboids..." << std::endl;
+		// Add all the intersections that adjust for overlaps
+		signedCuboids.insert( signedCuboids.end( ),
+			std::make_move_iterator( newIntersections.begin( ) ),
+			std::make_move_iterator( newIntersections.end( ) ) );
 	}
 
-	// Calculate the total volume of all "on" cuboids
-	const size_t onCount = std::transform_reduce(
-		onCuboids.begin( ), onCuboids.end( ),
-		size_t{ 0 },
+	const int64_t totalVolume = std::transform_reduce(
+		signedCuboids.begin( ), signedCuboids.end( ),
+		int64_t{ 0 },
 		std::plus<>( ),
-		[ ]( const Cuboid& c ) { return c.volume( ); }
-	);
-	return std::to_string( onCount );
-}
-
-std::vector<Cuboid>
-mergeCuboids( std::vector<Cuboid> cuboids )
-{
-	if( cuboids.empty( ) )
-		return cuboids;
-
-	bool didMerge = true;
-	while( didMerge )
-	{
-		didMerge = false;
-
-		// Iteratively try to merge pairs of cuboids
-		for( size_t i = 0; i < cuboids.size( ); ++i )
-		{
-			for( size_t j = i + 1; j < cuboids.size( ); ++j )
-			{
-				if( cuboids[ i ].canMergeWith( cuboids[ j ] ) )
-				{
-					// Merge the cuboids
-					Cuboid merged = cuboids[ i ].mergeWith( cuboids[ j ] );
-
-					// Replace the first cuboid with the merged result
-					cuboids[ i ] = merged;
-
-					// Remove the second cuboid
-					cuboids.erase( cuboids.begin( ) + j );
-
-					didMerge = true;
-					break; // Start over with the new set of cuboids
-				}
-			}
-			if( didMerge ) break;
+		[ ]( const SignedCuboid& sc ) {
+			return sc.m_sign * static_cast< int64_t >( sc.m_cuboid.volume( ) );
 		}
-	}
+	);
 
-	return cuboids;
+	return std::to_string( totalVolume );
 }

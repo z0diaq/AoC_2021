@@ -1,28 +1,33 @@
 import reactor_reboot;
 
-//leave what is needed
-#include <iostream>
 #include <string>
-#include <algorithm>
-#include <stdexcept>
-
-//containers
-#include <vector>
-#include <map>
-#include <set>
-#include <deque>
 #include <array>
-
 #include <regex>
 #include <unordered_set>
 
-//boost
-#include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string/classification.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/algorithm/string/replace.hpp>
-
 using namespace reactor_reboot;
+
+using Point3D = std::array<int, 3>;
+
+namespace std
+{
+	template<>
+	struct hash< Point3D >
+	{
+		size_t operator()( Point3D const& _point ) const noexcept
+		{
+			using namespace reactor_reboot;
+
+			size_t xHash{ hash<int>{}( _point[ X ] ) };
+			size_t yHash{ hash<int>{}( _point[ Y ] ) };
+			size_t zHash{ hash<int>{}( _point[ Z ] ) };
+
+			// one of many possible hash combining methods
+			return xHash ^ ( yHash << 1 ) ^ ( zHash << 2 );
+		}
+	};
+
+} // namespace std
 
 void
 Result::ProcessOne( const std::string& data )
@@ -41,7 +46,8 @@ Result::ProcessOne( const std::string& data )
 	}
 }
 
-void ProcessCommand( const Command& _cmd, std::unordered_set<Point3D>& _points );
+void
+ProcessCommand( const Command& _cmd, std::unordered_set<Point3D>& _points );
 
 std::string
 Result::FinishPartOne( )
