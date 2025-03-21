@@ -13,6 +13,8 @@ import amphipod;
 #include <deque>
 #include <array>
 #include <optional>
+#include <queue>
+#include <unordered_set>
 
 //boost
 #include <boost/algorithm/string/split.hpp>
@@ -38,6 +40,44 @@ struct State
 		//TODO: check if empty or have required Amphipod type inside
 		return false;
 	}
+
+	bool IsSolved( ) const
+	{
+		for( std::uint16_t type = 0; type != 4; ++type )
+			if( m_rooms[ type ][ 0 ] != m_rooms[ type ][ 1 ] || m_rooms[ type ][ 0 ] != type )
+				return false;
+		return true;
+	}
+
+	std::vector<State> GenerateHallwayToRoomMoves( ) const
+	{
+		std::vector<State> nextStates;
+
+		// TODO: fill the states
+
+		return nextStates;
+	}
+
+	std::vector<State> GenerateRoomToHallwayMoves( ) const
+	{
+		std::vector<State> nextStates;
+
+		// TODO: fill the states
+
+		return nextStates;
+	}
+
+	std::vector<State> GenerateMoves( ) const
+	{
+		auto nextHallwayToRoomMoves = GenerateHallwayToRoomMoves( ),
+			nextRoomToHallwaysMoves = GenerateRoomToHallwayMoves( );
+
+		nextHallwayToRoomMoves.insert( nextHallwayToRoomMoves.end( ),
+			std::make_move_iterator( nextRoomToHallwaysMoves.begin( ) ),
+			std::make_move_iterator( nextRoomToHallwaysMoves.end( ) ) );
+
+		return nextHallwayToRoomMoves;
+	}
 };
 
 namespace std {
@@ -50,10 +90,17 @@ namespace std {
 	};
 }
 
-
+// Dijkstra algorithm
 void
 Result::ProcessOne( const std::string& data )
 {
+	std::priority_queue<State> queue;
+	std::unordered_set<State, int> visited;
+
+	// TODO: implement Dijkstra algorithm to find min energy spent to solve puzzle
+
+
+
 	m_map.push_back( data );
 }
 
@@ -66,7 +113,21 @@ Result::FinishPartOne( )
 		return 0;
 
 	State initialState;
-	initialState.m_rooms[ 0 ][ 0 ] = GetAmphipod( 2, 3 );
+	// 1st room
+	initialState.m_rooms[ Room1 ][ 0 ] = GetAmphipod( 2, 3, m_map );
+	initialState.m_rooms[ Room1 ][ 1 ] = GetAmphipod( 3, 3, m_map );
+
+	// 2nd room
+	initialState.m_rooms[ Room2 ][ 0 ] = GetAmphipod( 2, 5, m_map );
+	initialState.m_rooms[ Room2 ][ 1 ] = GetAmphipod( 3, 5, m_map );
+
+	// 3rd room
+	initialState.m_rooms[ Room3 ][ 0 ] = GetAmphipod( 2, 7, m_map );
+	initialState.m_rooms[ Room3 ][ 1 ] = GetAmphipod( 3, 7, m_map );
+
+	// 4th room
+	initialState.m_rooms[ Room4 ][ 0 ] = GetAmphipod( 2, 9, m_map );
+	initialState.m_rooms[ Room4 ][ 1 ] = GetAmphipod( 3, 9, m_map );
 
 	return std::to_string( 0 );
 }

@@ -18,6 +18,12 @@ export namespace amphipod
 	constexpr Amphipod C{ 2 };
 	constexpr Amphipod D{ 3 };
 
+	using RoomNumber = std::uint16_t;
+	constexpr RoomNumber Room1{ 0 };
+	constexpr RoomNumber Room2{ 1 };
+	constexpr RoomNumber Room3{ 2 };
+	constexpr RoomNumber Room4{ 3 };
+
 	class Result : public AoC::Result
 	{
 
