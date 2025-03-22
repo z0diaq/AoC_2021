@@ -35,13 +35,15 @@ struct State
 	std::array<Room, 4> m_rooms;
 	std::uint32_t m_usedEnergy;
 
-	bool IsRoomReady( const Room& _room, Amphipod _amphipod ) const
+	bool
+	IsRoomReady( const Room& _room, Amphipod _amphipod ) const
 	{
 		//TODO: check if empty or have required Amphipod type inside
 		return false;
 	}
 
-	bool IsSolved( ) const
+	bool
+	IsSolved( ) const
 	{
 		for( std::uint16_t type = 0; type != 4; ++type )
 			if( m_rooms[ type ][ 0 ] != m_rooms[ type ][ 1 ] || m_rooms[ type ][ 0 ] != type )
@@ -49,11 +51,74 @@ struct State
 		return true;
 	}
 
+	constexpr int
+	GetRoomEntrance( int _roomIndex ) const
+	{
+		return 2 + _roomIndex * 2;
+	}
+
+	bool
+	IsHallwayClear( int _from, int _to ) const
+	{
+		const int start = std::min( _from, _to );
+		const int end = std::max( _from, _to );
+
+		return std::all_of(
+			m_hallway.begin( ) + start,
+			m_hallway.begin( ) + end + 1,
+			[_from, this]( const auto& spot )
+			{
+				return !spot.has_value( ) || &spot == &m_hallway[ _from ];
+			}
+		);
+	}
+
 	std::vector<State> GenerateHallwayToRoomMoves( ) const
 	{
 		std::vector<State> nextStates;
 
-		// TODO: fill the states
+		for( int hallwayPos = 0; hallwayPos < 11; ++hallwayPos )
+		{
+			const auto& spot = m_hallway[ hallwayPos ];
+			if( !spot.has_value( ) )
+				continue;
+
+			const char amphipod = *spot;
+			const int roomIndex = static_cast<int>( amphipod );
+			const int roomEntrance = GetRoomEntrance( roomIndex );
+
+			// Check if path to room entrance is clear
+			if( !IsHallwayClear( hallwayPos, roomEntrance ) )
+				continue;
+
+			// Check if the destination room is ready
+			if( !IsRoomReady( m_rooms[ roomIndex ], amphipod ) )
+				continue;
+
+			// Find the deepest empty spot in the room
+			auto roomIt = std::find_if(
+				m_rooms[ roomIndex ].rbegin( ),
+				m_rooms[ roomIndex ].rend( ),
+				[ ]( const auto& spot ) { return !spot.has_value( ); }
+			);
+
+			if( roomIt == m_rooms[ roomIndex ].rend( ) )
+				continue; // Room is full
+
+			const int roomPos = std::distance( m_rooms[ roomIndex ].begin( ), roomIt.base( ) ) - 1;
+
+			// Calculate energy cost
+			const int steps = std::abs( hallwayPos - roomEntrance ) + roomPos + 1;
+			const int cost = steps * m_moveCosts[ roomIndex ];
+
+			// Create new state (immutable approach)
+			State newState = *this;
+			newState.m_hallway[ hallwayPos ] = std::nullopt;
+			newState.m_rooms[ roomIndex ][ roomPos ] = amphipod;
+			newState.m_usedEnergy += cost;
+
+			nextStates.push_back( std::move( newState ) );
+		}
 
 		return nextStates;
 	}
@@ -85,7 +150,21 @@ namespace std {
 	struct hash<State> {
 		std::size_t operator()( const State& _state ) const
 		{
-			return 0; // TODO: hash
+			std::size_t hash_value{};
+			size_t shift{};
+
+			for( const auto& spot : _state.m_hallway )
+				hash_value = hash_value ^ ( std::hash<std::uint16_t>{}( spot.has_value( ) ? *spot : '.' ) << ++shift );
+
+			for( const auto& room : _state.m_rooms )
+			{
+				for( const auto& spot : room )
+				{
+					hash_value = hash_value ^ ( std::hash<std::uint16_t>{}( spot.has_value( ) ? *spot : '.' ) << ++shift );
+				}
+			}
+
+			return hash_value;
 		}
 	};
 }
