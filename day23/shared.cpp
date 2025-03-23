@@ -29,10 +29,6 @@ Result::Result()
 void
 Result::Init()
 {
-	m_moveCosts[ A ] = 1;
-	m_moveCosts[ B ] = 10;
-	m_moveCosts[ C ] = 100;
-	m_moveCosts[ D ] = 1000;
 }
 
 void

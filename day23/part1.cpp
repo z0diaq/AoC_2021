@@ -29,17 +29,27 @@ using AmphipodOpt = std::optional<Amphipod>;
 // room can have at 0-2 amphipods
 using Room = std::array<AmphipodOpt, 2>;
 
+namespace
+{
+	constexpr std::array<std::uint32_t, 4> MOVE_COSTS{ 1, 10, 100, 1000 };
+}
+
 struct State
 {
-	std::array<AmphipodOpt, 10> m_hallway;
+	std::array<AmphipodOpt, 11> m_hallway;
 	std::array<Room, 4> m_rooms;
-	std::uint32_t m_usedEnergy;
+	std::uint32_t m_usedEnergy{};
 
 	bool
 	IsRoomReady( const Room& _room, Amphipod _amphipod ) const
 	{
-		//TODO: check if empty or have required Amphipod type inside
-		return false;
+		return std::all_of(
+			_room.begin( ),
+			_room.end( ),
+			[_amphipod]( const auto& spot ) {
+				return !spot.has_value( ) || *spot == _amphipod;
+			}
+		);
 	}
 
 	bool
@@ -73,7 +83,8 @@ struct State
 		);
 	}
 
-	std::vector<State> GenerateHallwayToRoomMoves( ) const
+	std::vector<State>
+	GenerateHallwayToRoomMoves( ) const
 	{
 		std::vector<State> nextStates;
 
@@ -83,7 +94,7 @@ struct State
 			if( !spot.has_value( ) )
 				continue;
 
-			const char amphipod = *spot;
+			const Amphipod amphipod = *spot;
 			const int roomIndex = static_cast<int>( amphipod );
 			const int roomEntrance = GetRoomEntrance( roomIndex );
 
@@ -105,11 +116,11 @@ struct State
 			if( roomIt == m_rooms[ roomIndex ].rend( ) )
 				continue; // Room is full
 
-			const int roomPos = std::distance( m_rooms[ roomIndex ].begin( ), roomIt.base( ) ) - 1;
+			const int roomPos = static_cast<int>(std::distance( m_rooms[ roomIndex ].begin( ), roomIt.base( ) )) - 1;
 
 			// Calculate energy cost
 			const int steps = std::abs( hallwayPos - roomEntrance ) + roomPos + 1;
-			const int cost = steps * m_moveCosts[ roomIndex ];
+			const int cost = steps * MOVE_COSTS[ roomIndex ];
 
 			// Create new state (immutable approach)
 			State newState = *this;
@@ -123,16 +134,68 @@ struct State
 		return nextStates;
 	}
 
-	std::vector<State> GenerateRoomToHallwayMoves( ) const
+	std::vector<State>
+	GenerateRoomToHallwayMoves( ) const
 	{
 		std::vector<State> nextStates;
 
-		// TODO: fill the states
+		for( int roomIndex = 0; roomIndex < 4; ++roomIndex )
+		{
+			// Find the topmost amphipod in the room
+			auto roomIt = std::find_if(
+				m_rooms[ roomIndex ].begin( ),
+				m_rooms[ roomIndex ].end( ),
+				[ ]( const auto& spot ) { return spot.has_value( ); }
+			);
+
+			if( roomIt == m_rooms[ roomIndex ].end( ) )
+				continue; // Room is empty
+
+			const int roomPos = static_cast<int>(std::distance( m_rooms[ roomIndex ].begin( ), roomIt ));
+			const Amphipod amphipod = **roomIt;
+			const int targetRoomIndex = static_cast<int>( amphipod );
+
+			// If amphipod is already in the correct room and all amphipods below it are also correct, don't move it
+			if( roomIndex == targetRoomIndex )
+			{
+				const bool shouldStay = std::all_of(
+					roomIt,
+					m_rooms[ roomIndex ].end( ),
+					[amphipod]( const auto& spot ) { return spot.has_value( ) && *spot == amphipod; }
+				);
+
+				if( shouldStay )
+					continue;
+			}
+
+			const int roomEntrance = GetRoomEntrance( roomIndex );
+
+			// Static array of valid hallway positions (skip positions directly above rooms)
+			constexpr std::array<int, 7> validHallwayPositions = { 0, 1, 3, 5, 7, 9, 10 };
+
+			for( const int hallwayPos : validHallwayPositions )
+			{
+				if( !IsHallwayClear( roomEntrance, hallwayPos ) )
+					continue;
+
+				// Calculate energy cost
+				const int steps = std::abs( hallwayPos - roomEntrance ) + roomPos + 1;
+				const int cost = steps * MOVE_COSTS[ static_cast<int>( amphipod ) ];
+
+				State newState = *this;
+				newState.m_rooms[ roomIndex ][ roomPos ] = std::nullopt;
+				newState.m_hallway[ hallwayPos ] = amphipod;
+				newState.m_usedEnergy += cost;
+
+				nextStates.push_back( std::move( newState ) );
+			}
+		}
 
 		return nextStates;
 	}
 
-	std::vector<State> GenerateMoves( ) const
+	std::vector<State>
+	GenerateMoves( ) const
 	{
 		auto nextHallwayToRoomMoves = GenerateHallwayToRoomMoves( ),
 			nextRoomToHallwaysMoves = GenerateRoomToHallwayMoves( );
@@ -143,12 +206,28 @@ struct State
 
 		return nextHallwayToRoomMoves;
 	}
+
+	bool
+	operator==( const State& _other ) const
+	{
+		// NOTE: intentionally not comparing energy cost
+		return m_hallway == _other.m_hallway && m_rooms == _other.m_rooms;
+	}
+
+	bool
+	operator<( const State& _other ) const
+	{
+		return m_usedEnergy > _other.m_usedEnergy;
+	}
 };
 
-namespace std {
+namespace std
+{
 	template<>
-	struct hash<State> {
-		std::size_t operator()( const State& _state ) const
+	struct hash<State>
+	{
+		std::size_t
+		operator()( const State& _state ) const
 		{
 			std::size_t hash_value{};
 			size_t shift{};
@@ -169,21 +248,17 @@ namespace std {
 	};
 }
 
-// Dijkstra algorithm
 void
 Result::ProcessOne( const std::string& data )
 {
-	std::priority_queue<State> queue;
-	std::unordered_set<State, int> visited;
-
-	// TODO: implement Dijkstra algorithm to find min energy spent to solve puzzle
-
-
-
 	m_map.push_back( data );
 }
 
-Amphipod GetAmphipod( size_t _row, size_t _column, const Map& _map );
+Amphipod
+GetAmphipod( size_t _row, size_t _column, const Map& _map );
+
+std::optional<int>
+SolvePart1( const State& _initialState );
 
 std::string
 Result::FinishPartOne( )
@@ -208,13 +283,79 @@ Result::FinishPartOne( )
 	initialState.m_rooms[ Room4 ][ 0 ] = GetAmphipod( 2, 9, m_map );
 	initialState.m_rooms[ Room4 ][ 1 ] = GetAmphipod( 3, 9, m_map );
 
-	return std::to_string( 0 );
+	auto result = SolvePart1( initialState );
+
+	if( result )
+		return std::to_string( *result );
+	else
+	{
+		std::cerr << "No solution found!" << std::endl;
+		return std::to_string( 0 );
+	}
 }
 
 Amphipod GetAmphipod( size_t _row, size_t _column, const Map& _map )
 {
-	// TODO: extract from map
-	// throw exception if not A-D
+	if( _row >= _map.size( ) )
+	{
+		std::cerr << "Requested row " << _row << " but map has only " << _map.size( ) << " rows" << std::endl;
+		throw std::runtime_error( "Invalid row index" );
+	}
 
-	return A;
+	const auto& row = _map[ _row ];
+
+	if( _column >= row.length( ) )
+	{
+		std::cerr << "Requested column " << _column << " but row " << _row << " has only " << row.length( ) << " columns" << std::endl;
+		throw std::runtime_error( "Invalid column index" );
+	}
+
+	char c = row[ _column ];
+	if( c < 'A' || c > 'D' )
+	{
+		std::cerr << "[" << c << "] from line [" << row << "] at (" << _column << ", " << _row << ") is not a valid Amphipod (A-D)" << std::endl;
+		throw std::runtime_error( "Not a valid amphipod" );
+	}
+
+	return static_cast<Amphipod>(c - 'A');
+}
+
+// Dijkstra algorithm
+std::optional<int>
+SolvePart1( const State& _initialState )
+{
+	std::priority_queue<State> queue;
+	std::unordered_map<State, std::uint32_t> visited;
+
+	queue.push( _initialState );
+	visited[ _initialState ] = _initialState.m_usedEnergy;
+
+	while( !queue.empty( ) )
+	{
+		State currentState = queue.top( );
+		queue.pop( );
+
+		auto it = visited.find( currentState );
+		if( it != visited.end( ) && it->second < currentState.m_usedEnergy )
+			continue;
+
+		if( currentState.IsSolved( ) )
+			return currentState.m_usedEnergy;
+
+		auto nextStates = currentState.GenerateMoves( );
+
+		for( const auto& nextState : nextStates )
+		{
+			auto it = visited.find( nextState );
+
+			// If we haven't visited this state or found a better path, update it
+			if( it == visited.end( ) || nextState.m_usedEnergy < it->second )
+			{
+				visited[ nextState ] = nextState.m_usedEnergy;
+				queue.push( nextState );
+			}
+		}
+	}
+
+	return std::nullopt; // No solution found
 }

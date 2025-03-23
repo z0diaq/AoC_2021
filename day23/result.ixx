@@ -44,6 +44,5 @@ export namespace amphipod
 	private:
 		//data
 		Map m_map;
-		std::array<std::uint32_t, 4> m_moveCosts;
 	};
 }
