@@ -24,18 +24,18 @@ import amphipod;
 
 using namespace amphipod;
 
-using AmphipodOpt = std::optional<Amphipod>;
-
-// room can have at 0-2 amphipods
-using Room = std::array<AmphipodOpt, 2>;
-
 namespace
 {
 	constexpr std::array<std::uint32_t, 4> MOVE_COSTS{ 1, 10, 100, 1000 };
 }
 
-struct State
+template<std::size_t RoomSize>
+struct StateT
 {
+	using AmphipodOpt = std::optional<Amphipod>;
+	// room can have at 0-2/4 amphipods
+	using Room = std::array<AmphipodOpt, RoomSize>;
+
 	std::array<AmphipodOpt, 11> m_hallway;
 	std::array<Room, 4> m_rooms;
 	std::uint32_t m_usedEnergy{};
@@ -56,8 +56,13 @@ struct State
 	IsSolved( ) const
 	{
 		for( std::uint16_t type = 0; type != 4; ++type )
-			if( m_rooms[ type ][ 0 ] != m_rooms[ type ][ 1 ] || m_rooms[ type ][ 0 ] != type )
-				return false;
+		{
+			for( std::uint16_t pos = 0; pos != RoomSize; ++pos )
+			{
+				if( !m_rooms[ type ][ pos ].has_value( ) || *m_rooms[ type ][ pos ] != type )
+					return false;
+			}
+		}
 		return true;
 	}
 
@@ -83,10 +88,10 @@ struct State
 		);
 	}
 
-	std::vector<State>
+	std::vector<StateT>
 	GenerateHallwayToRoomMoves( ) const
 	{
-		std::vector<State> nextStates;
+		std::vector<StateT> nextStates;
 
 		for( int hallwayPos = 0; hallwayPos < 11; ++hallwayPos )
 		{
@@ -123,7 +128,7 @@ struct State
 			const int cost = steps * MOVE_COSTS[ roomIndex ];
 
 			// Create new state (immutable approach)
-			State newState = *this;
+			StateT newState = *this;
 			newState.m_hallway[ hallwayPos ] = std::nullopt;
 			newState.m_rooms[ roomIndex ][ roomPos ] = amphipod;
 			newState.m_usedEnergy += cost;
@@ -134,10 +139,10 @@ struct State
 		return nextStates;
 	}
 
-	std::vector<State>
+	std::vector<StateT>
 	GenerateRoomToHallwayMoves( ) const
 	{
-		std::vector<State> nextStates;
+		std::vector<StateT> nextStates;
 
 		for( int roomIndex = 0; roomIndex < 4; ++roomIndex )
 		{
@@ -182,7 +187,7 @@ struct State
 				const int steps = std::abs( hallwayPos - roomEntrance ) + roomPos + 1;
 				const int cost = steps * MOVE_COSTS[ static_cast<int>( amphipod ) ];
 
-				State newState = *this;
+				StateT newState = *this;
 				newState.m_rooms[ roomIndex ][ roomPos ] = std::nullopt;
 				newState.m_hallway[ hallwayPos ] = amphipod;
 				newState.m_usedEnergy += cost;
@@ -194,7 +199,7 @@ struct State
 		return nextStates;
 	}
 
-	std::vector<State>
+	std::vector<StateT>
 	GenerateMoves( ) const
 	{
 		auto nextHallwayToRoomMoves = GenerateHallwayToRoomMoves( ),
@@ -208,14 +213,14 @@ struct State
 	}
 
 	bool
-	operator==( const State& _other ) const
+	operator==( const StateT& _other ) const
 	{
 		// NOTE: intentionally not comparing energy cost
 		return m_hallway == _other.m_hallway && m_rooms == _other.m_rooms;
 	}
 
 	bool
-	operator<( const State& _other ) const
+	operator<( const StateT& _other ) const
 	{
 		return m_usedEnergy > _other.m_usedEnergy;
 	}
@@ -223,11 +228,11 @@ struct State
 
 namespace std
 {
-	template<>
-	struct hash<State>
+	template<std::size_t RoomSize>
+	struct hash<StateT<RoomSize>>
 	{
 		std::size_t
-		operator()( const State& _state ) const
+		operator()( const StateT<RoomSize>& _state ) const
 		{
 			std::size_t hash_value{};
 			size_t shift{};
@@ -257,8 +262,50 @@ Result::ProcessOne( const std::string& data )
 Amphipod
 GetAmphipod( size_t _row, size_t _column, const Map& _map );
 
+using State1 = StateT<2>;  // Part 1: rooms with 2 positions
+using State2 = StateT<4>;  // Part 2: rooms with 4 positions
+
+// Dijkstra algorithm
+template <typename StateType>
 std::optional<int>
-SolvePart1( const State& _initialState );
+SolveWithDijkstra( const StateType& _initialState )
+{
+	std::priority_queue<StateType> queue;
+	std::unordered_map<StateType, std::uint32_t> visited;
+
+	queue.push( _initialState );
+	visited[ _initialState ] = _initialState.m_usedEnergy;
+
+	while( !queue.empty( ) )
+	{
+		StateType currentState = queue.top( );
+		queue.pop( );
+
+		auto it = visited.find( currentState );
+		if( it != visited.end( ) && it->second < currentState.m_usedEnergy )
+			continue;
+
+		if( currentState.IsSolved( ) )
+			return currentState.m_usedEnergy;
+
+		auto nextStates = currentState.GenerateMoves( );
+
+		for( const auto& nextState : nextStates )
+		{
+			auto it = visited.find( nextState );
+
+			// If we haven't visited this state or found a better path, update it
+			if( it == visited.end( ) || nextState.m_usedEnergy < it->second )
+			{
+				visited[ nextState ] = nextState.m_usedEnergy;
+				queue.push( nextState );
+			}
+		}
+	}
+
+	return std::nullopt; // No solution found
+
+}
 
 std::string
 Result::FinishPartOne( )
@@ -266,7 +313,7 @@ Result::FinishPartOne( )
 	if( m_map.size( ) != 5 )
 		return 0;
 
-	State initialState;
+	State1 initialState;
 	// 1st room
 	initialState.m_rooms[ Room1 ][ 0 ] = GetAmphipod( 2, 3, m_map );
 	initialState.m_rooms[ Room1 ][ 1 ] = GetAmphipod( 3, 3, m_map );
@@ -283,7 +330,56 @@ Result::FinishPartOne( )
 	initialState.m_rooms[ Room4 ][ 0 ] = GetAmphipod( 2, 9, m_map );
 	initialState.m_rooms[ Room4 ][ 1 ] = GetAmphipod( 3, 9, m_map );
 
-	auto result = SolvePart1( initialState );
+	auto result = SolveWithDijkstra( initialState );
+
+	if( result )
+		return std::to_string( *result );
+	else
+	{
+		std::cerr << "No solution found!" << std::endl;
+		return std::to_string( 0 );
+	}
+}
+
+std::string
+Result::FinishPartTwo( )
+{
+	// Insert the extra lines for part 2
+	std::vector<std::string> extraLines = { "  #D#C#B#A#", "  #D#B#A#C#" };
+	m_map.insert( m_map.begin( ) + 3, extraLines.begin( ), extraLines.end( ) );
+
+	if( m_map.size( ) != 7 )
+		return std::to_string( 0 );
+
+	State2 initialState;
+	// Initialize hallway as empty
+	std::fill( initialState.m_hallway.begin( ), initialState.m_hallway.end( ), std::nullopt );
+
+	// 1st room
+	initialState.m_rooms[ Room1 ][ 0 ] = GetAmphipod( 2, 3, m_map );
+	initialState.m_rooms[ Room1 ][ 1 ] = GetAmphipod( 3, 3, m_map );
+	initialState.m_rooms[ Room1 ][ 2 ] = GetAmphipod( 4, 3, m_map );
+	initialState.m_rooms[ Room1 ][ 3 ] = GetAmphipod( 5, 3, m_map );
+
+	// 2nd room
+	initialState.m_rooms[ Room2 ][ 0 ] = GetAmphipod( 2, 5, m_map );
+	initialState.m_rooms[ Room2 ][ 1 ] = GetAmphipod( 3, 5, m_map );
+	initialState.m_rooms[ Room2 ][ 2 ] = GetAmphipod( 4, 5, m_map );
+	initialState.m_rooms[ Room2 ][ 3 ] = GetAmphipod( 5, 5, m_map );
+
+	// 3rd room
+	initialState.m_rooms[ Room3 ][ 0 ] = GetAmphipod( 2, 7, m_map );
+	initialState.m_rooms[ Room3 ][ 1 ] = GetAmphipod( 3, 7, m_map );
+	initialState.m_rooms[ Room3 ][ 2 ] = GetAmphipod( 4, 7, m_map );
+	initialState.m_rooms[ Room3 ][ 3 ] = GetAmphipod( 5, 7, m_map );
+
+	// 4th room
+	initialState.m_rooms[ Room4 ][ 0 ] = GetAmphipod( 2, 9, m_map );
+	initialState.m_rooms[ Room4 ][ 1 ] = GetAmphipod( 3, 9, m_map );
+	initialState.m_rooms[ Room4 ][ 2 ] = GetAmphipod( 4, 9, m_map );
+	initialState.m_rooms[ Room4 ][ 3 ] = GetAmphipod( 5, 9, m_map );
+
+	auto result = SolveWithDijkstra( initialState );
 
 	if( result )
 		return std::to_string( *result );
@@ -318,44 +414,4 @@ Amphipod GetAmphipod( size_t _row, size_t _column, const Map& _map )
 	}
 
 	return static_cast<Amphipod>(c - 'A');
-}
-
-// Dijkstra algorithm
-std::optional<int>
-SolvePart1( const State& _initialState )
-{
-	std::priority_queue<State> queue;
-	std::unordered_map<State, std::uint32_t> visited;
-
-	queue.push( _initialState );
-	visited[ _initialState ] = _initialState.m_usedEnergy;
-
-	while( !queue.empty( ) )
-	{
-		State currentState = queue.top( );
-		queue.pop( );
-
-		auto it = visited.find( currentState );
-		if( it != visited.end( ) && it->second < currentState.m_usedEnergy )
-			continue;
-
-		if( currentState.IsSolved( ) )
-			return currentState.m_usedEnergy;
-
-		auto nextStates = currentState.GenerateMoves( );
-
-		for( const auto& nextState : nextStates )
-		{
-			auto it = visited.find( nextState );
-
-			// If we haven't visited this state or found a better path, update it
-			if( it == visited.end( ) || nextState.m_usedEnergy < it->second )
-			{
-				visited[ nextState ] = nextState.m_usedEnergy;
-				queue.push( nextState );
-			}
-		}
-	}
-
-	return std::nullopt; // No solution found
 }
