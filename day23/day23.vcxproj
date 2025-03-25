@@ -137,11 +137,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="amphipod.ixx" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="part1.cpp" />
     <ClCompile Include="part2.cpp" />
     <ClCompile Include="result.ixx" />
     <ClCompile Include="shared.cpp" />
+    <ClCompile Include="solver.ixx" />
+    <ClCompile Include="state.ixx" />
+    <ClCompile Include="types.ixx" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AoC\AoC.vcxproj">
