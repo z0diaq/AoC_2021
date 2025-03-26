@@ -6,6 +6,9 @@ import :state;
 import <optional>;
 import <queue>;
 import <unordered_map>;
+import <functional>;
+import <algorithm>;
+import <stdexcept>;
 
 export namespace amphipod
 {

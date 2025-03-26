@@ -1,6 +1,6 @@
-import amphipod;
-
 #include <gtest/gtest.h>
+
+import amphipod;
 
 int main( int argc, char* argv[ ] )
 {

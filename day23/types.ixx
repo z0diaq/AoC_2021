@@ -2,10 +2,13 @@ export module amphipod:types;
 
 import <cstdint>;
 import <array>;
+import <vector>;
+import <string>;
 
 export namespace amphipod
 {
 	using Amphipod = std::uint16_t;
+	using Map = std::vector<std::string>;
 
 	constexpr Amphipod A{ 0 };
 	constexpr Amphipod B{ 1 };

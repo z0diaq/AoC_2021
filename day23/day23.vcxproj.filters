@@ -21,16 +21,19 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="part1.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="part2.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="result.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="shared.cpp">
+    <ClCompile Include="amphipod.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="solver.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="state.ixx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="types.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -5,6 +5,8 @@ import :types;
 import <array>;
 import <cstddef>;
 import <optional>;
+import <vector>;
+import <algorithm>;
 
 export namespace amphipod
 {
@@ -204,31 +206,31 @@ export namespace amphipod
 			return m_usedEnergy > _other.m_usedEnergy;
 		}
 	};
+} // amphipod
 
-	namespace std
+namespace std
+{
+	template<size_t RoomSize>
+	struct hash<amphipod::StateT<RoomSize>>
 	{
-		template<std::size_t RoomSize>
-		struct hash<StateT<RoomSize>>
+		std::size_t
+			operator()( const amphipod::StateT<RoomSize>& _state ) const
 		{
-			std::size_t
-				operator()( const StateT<RoomSize>& _state ) const
+			std::size_t hash_value{};
+			size_t shift{};
+
+			for( const auto& spot : _state.m_hallway )
+				hash_value = hash_value ^ ( hash<uint16_t>{}( spot.has_value( ) ? *spot : '.' ) << ++shift );
+
+			for( const auto& room : _state.m_rooms )
 			{
-				std::size_t hash_value{};
-				size_t shift{};
-
-				for( const auto& spot : _state.m_hallway )
-					hash_value = hash_value ^ ( std::hash<std::uint16_t>{}( spot.has_value( ) ? *spot : '.' ) << ++shift );
-
-				for( const auto& room : _state.m_rooms )
+				for( const auto& spot : room )
 				{
-					for( const auto& spot : room )
-					{
-						hash_value = hash_value ^ ( std::hash<std::uint16_t>{}( spot.has_value( ) ? *spot : '.' ) << ++shift );
-					}
+					hash_value = hash_value ^ ( hash<uint16_t>{}( spot.has_value( ) ? *spot : '.' ) << ++shift );
 				}
-
-				return hash_value;
 			}
-		};
-	}
+
+			return hash_value;
+		}
+	};
 }
