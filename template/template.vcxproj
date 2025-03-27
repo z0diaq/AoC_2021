@@ -139,11 +139,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="aoc_template.ixx" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="part1.cpp" />
-    <ClCompile Include="part2.cpp" />
+    <ClCompile Include="solver.ixx" />
     <ClCompile Include="result.ixx" />
-    <ClCompile Include="shared.cpp" />
+    <ClCompile Include="types.ixx" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="readme_setup.txt" />

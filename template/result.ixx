@@ -1,10 +1,10 @@
-module;
+export module aoc_template:result;
 
-#include <string>
-
-export module aoc_template;
+import :types;
 
 import AoC;
+
+import <string>;
 
 export namespace aoc_template
 {
@@ -12,10 +12,14 @@ export namespace aoc_template
 	{
 
 	public:
-		Result();
+		Result( )
+		{
+		}
 
 	protected:
-		virtual void Init() override;
+		virtual void Init( ) override
+		{
+		}
 
 		virtual void ProcessOne( const std::string& data ) override;
 		virtual std::string FinishPartOne( ) override;
@@ -23,7 +27,9 @@ export namespace aoc_template
 		virtual void ProcessTwo( const std::string& data ) override;
 		virtual std::string FinishPartTwo( ) override;
 
-		virtual void Teardown() override;
+		virtual void Teardown( ) override
+		{
+		}
 
 	private:
 		//data

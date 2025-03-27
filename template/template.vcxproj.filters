@@ -24,13 +24,13 @@
     <ClCompile Include="result.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="part1.cpp">
+    <ClCompile Include="solver.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="part2.cpp">
+    <ClCompile Include="aoc_template.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="shared.cpp">
+    <ClCompile Include="types.ixx">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
