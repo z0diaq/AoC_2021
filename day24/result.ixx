@@ -22,11 +22,38 @@ export namespace alu
 		{
 		}
 
-		virtual void ProcessOne( const std::string& data ) override;
-		virtual std::string FinishPartOne( ) override;
+		virtual void ProcessOne( const std::string& data ) override
+		{
+			m_instructions.push_back( data );
+		}
 
-		virtual void ProcessTwo( const std::string& data ) override;
-		virtual std::string FinishPartTwo( ) override;
+		virtual std::string FinishPartOne( ) override
+		{
+			DigitsMap digits = ExtractDigitsMap( );
+
+			std::string maxModelNumber;
+			for( int i = 0; i < 14; i++ )
+				maxModelNumber += std::to_string( digits[ i ].second );
+
+			return maxModelNumber;
+		}
+
+
+		virtual void ProcessTwo( const std::string& data ) override
+		{
+			ProcessOne( data );
+		}
+
+		virtual std::string FinishPartTwo( ) override
+		{
+			DigitsMap digits = ExtractDigitsMap( );
+
+			std::string minModelNumber;
+			for( int i = 0; i < 14; i++ )
+				minModelNumber += std::to_string( digits[ i ].first );
+
+			return minModelNumber;
+		}
 
 		virtual void Teardown( ) override
 		{
@@ -37,6 +64,6 @@ export namespace alu
 		//data
 		std::vector<std::string> m_instructions;
 
-		void ExtractDigitBlocks( );
+		DigitsMap ExtractDigitsMap( );
 	};
 }
