@@ -15,7 +15,7 @@ SeafloorRow ParseRow( const std::string& _dataRow );
 void
 Result::ProcessOne( const std::string& data )
 {
-	m_seafloor.push_back( ParseRow( data ) );
+	m_initialSeafloorMap.push_back( ParseRow( data ) );
 }
 
 std::string
