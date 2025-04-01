@@ -116,7 +116,7 @@ namespace sea_cucumber
 				IterationState state{ map, 0 };
 
 				// Manually create a map with east-moving cucumbers only
-				auto afterEast = result.MoveEastOnly( state.m_currentMap );
+				auto [afterEast, changed] = result.MoveEastOnly( state.m_currentMap, false );
 
 				// Verify the map after east movement
 				ASSERT_EQ( afterEast.size( ), expected.size( ) );

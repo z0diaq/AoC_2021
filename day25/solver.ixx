@@ -21,7 +21,11 @@ Result::ProcessOne( const std::string& data )
 std::string
 Result::FinishPartOne( )
 {
-	return std::to_string( 0 );
+	auto result = Step( { m_initialSeafloorMap, 0, false } );
+	while( result.m_changed )
+		result = Step( result );
+
+	return std::to_string( result.m_iterationNumber );
 }
 
 void

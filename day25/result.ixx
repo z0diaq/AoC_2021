@@ -16,6 +16,7 @@ export namespace sea_cucumber
 	{
 		SeafloorMap m_currentMap;
 		size_t m_iterationNumber{};
+		bool m_changed{};
 	};
 
 	class Result : public AoC::Result
@@ -27,102 +28,83 @@ export namespace sea_cucumber
 		{
 		}
 
-		IterationState Step( IterationState _state );
-
-		const SeafloorMap& InitialMap( ) const
+		const SeafloorMap&
+		InitialMap( ) const
 		{
 			return m_initialSeafloorMap;
 		}
 
-		IterationState Step( IterationState _state )
+		IterationState
+		Step( IterationState _state )
 		{
-			bool hasMoved = false;
 			// Move east-facing cucumbers (>)
-			auto [afterEast, hasMoved] = MoveEastOnly( _state.m_currentMap, hasMoved);
+			auto [afterEast, changed] = MoveEastOnly( _state.m_currentMap, false);
 
 			// Move south-facing cucumbers (v)
-			auto afterSouth = MoveSouthOnly( afterEast );
+			auto [afterSouth, changedFinal] = MoveSouthOnly( afterEast, changed );
 
-			// Check if any movement happened
-			bool hasMoved = !IsEqual( afterSouth, _state.m_currentMap );
-
-			// Return the new state with updated iteration count
-			return { afterSouth, _state.m_iterationNumber + 1 };
+			return { afterSouth, _state.m_iterationNumber + 1, changedFinal };
 		}
 
 		std::pair<SeafloorMap, bool>
-		MoveEastOnly( const SeafloorMap& _map, bool _hasMoved ) const
+		MoveEastOnly( const SeafloorMap& _map, bool _changed ) const
 		{
-			// Create a copy that we'll modify
 			auto newMap = _map;
 			const size_t width = _map[ 0 ].size( );
 
-			// For each row
 			for( size_t rowIdx = 0; rowIdx < _map.size( ); ++rowIdx )
 			{
-				const auto& row = map[ rowIdx ];
+				const auto& row = _map[ rowIdx ];
 
-				// Find all east-facing cucumbers that can move
 				std::vector<size_t> movableCucumbers;
 
 				for( size_t colIdx = 0; colIdx < width; ++colIdx )
 				{
-					// Check if this is an east-facing cucumber
 					if( row[ colIdx ] == SeaCucumber::FacingEast )
 					{
-						// Calculate destination with wrapping
 						size_t nextCol = ( colIdx + 1 ) % width;
 
-						// Check if destination is empty
 						if( row[ nextCol ] == SeaCucumber::None )
-						{
 							movableCucumbers.push_back( colIdx );
-						}
 					}
 				}
 
-				// Apply all movements for this row
 				for( const auto& colIdx : movableCucumbers )
 				{
 					size_t nextCol = ( colIdx + 1 ) % width;
 
-					// Move the cucumber
 					newMap[ rowIdx ][ colIdx ] = SeaCucumber::None;
 					newMap[ rowIdx ][ nextCol ] = SeaCucumber::FacingEast;
+
+					_changed = true;
 				}
 			}
 
-			return std::make_pair(newMap, _hasMoved);
+			return { newMap, _changed };
 		}
 
-		SeafloorMap
-		MoveSouthOnly( const SeafloorMap& map ) const
+		std::pair<SeafloorMap, bool>
+		MoveSouthOnly( const SeafloorMap& _map, bool _changed ) const
 		{
 			// Create a copy that we'll modify
-			auto newMap = map;
-			const size_t height = map.size( );
-			const size_t width = map[ 0 ].size( );
+			auto newMap = _map;
+			const size_t height = _map.size( );
+			const size_t width = _map[ 0 ].size( );
 
-			// Find all south-facing cucumbers that can move
 			std::vector<std::pair<size_t, size_t>> movableCucumbers;
 
 			for( size_t rowIdx = 0; rowIdx < height; ++rowIdx )
 			{
-				const auto& row = map[ rowIdx ];
+				const auto& row = _map[ rowIdx ];
 
 				for( size_t colIdx = 0; colIdx < width; ++colIdx )
 				{
-					// Check if this is a south-facing cucumber
 					if( row[ colIdx ] == SeaCucumber::FacingSouth )
 					{
-						// Calculate destination with wrapping
 						size_t nextRow = ( rowIdx + 1 ) % height;
 
-						// Check if destination is empty
-						if( map[ nextRow ][ colIdx ] == SeaCucumber::None )
-						{
+						if( _map[ nextRow ][ colIdx ] == SeaCucumber::None )
 							movableCucumbers.emplace_back( rowIdx, colIdx );
-						}
 					}
 				}
 			}
@@ -132,26 +114,36 @@ export namespace sea_cucumber
 			{
 				size_t nextRow = ( rowIdx + 1 ) % height;
 
-				// Move the cucumber
 				newMap[ rowIdx ][ colIdx ] = SeaCucumber::None;
 				newMap[ nextRow ][ colIdx ] = SeaCucumber::FacingSouth;
+
+				_changed = true;
 			}
 
-			return newMap;
+			return { newMap, _changed };
 		}
 
 	protected:
-		virtual void Init( ) override
+
+		virtual void
+		Init( ) override
 		{
 		}
 
-		virtual void ProcessOne( const std::string& data ) override;
-		virtual std::string FinishPartOne( ) override;
+		virtual void
+		ProcessOne( const std::string& data ) override;
 
-		virtual void ProcessTwo( const std::string& data ) override;
-		virtual std::string FinishPartTwo( ) override;
+		virtual std::string
+		FinishPartOne( ) override;
 
-		virtual void Teardown( ) override
+		virtual void
+		ProcessTwo( const std::string& data ) override;
+
+		virtual std::string
+		FinishPartTwo( ) override;
+
+		virtual void
+		Teardown( ) override
 		{
 			m_initialSeafloorMap.clear( );
 		}
